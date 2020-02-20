@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title></title>
+    <style>
+    </style>
+    <script type="text/tiscript">
+        // 发送事件到tis侧（供go调用）②
+        function postEvent(ename, edata) {
+            view.root.postEvent(ename, edata);
+        }
+    
+        $(#btn).on("click", function(){
+            view.postEvent("data_from_tis", "HELLO");
+        })
+    
+        self << event data_from_go(evt) { stdout.println(String.printf("process event:data_from_tis, data:%s, type:%s", evt.data, typeof(evt.data))); }
+    </script>
+</head>
+
+<body>
+    <button id="btn">Click Me</button>
+</body>
+
+</html>
