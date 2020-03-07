@@ -1,6 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"./app"
 	"./app/model"
 )
@@ -25,5 +30,21 @@ func main() {
 	}
 
 	svr.Init()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		for {
+			s := <-c
+			switch s {
+			case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
+				msg := fmt.Sprintf("signal received:%s", s.String())
+				os.Exit(svr.Exit(msg))
+			case syscall.SIGHUP:
+			default:
+				return
+			}
+		}
+	}()
+
 	svr.Run()
 }

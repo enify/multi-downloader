@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -16,15 +17,15 @@ const (
 )
 
 type (
+	// LogLevel .
+	LogLevel int
+
 	// Logger extend logging type
 	Logger struct {
 		level LogLevel
 
 		*log.Logger
 	}
-
-	// LogLevel .
-	LogLevel int
 )
 
 // NewLogger 返回 Logger 指针对象
@@ -53,27 +54,32 @@ func NewLogger(level, path string) (lg *Logger, err error) {
 // Debug log a message with severity "DEBUG"
 func (lg *Logger) Debug(format string, v ...interface{}) {
 	if lg.level <= DEBUG {
-		lg.Printf("DEBUG: "+format, v...)
+		lg.Output(2, fmt.Sprintf("DEBUG: "+format, v...))
 	}
 }
 
 // Info log a message with severity "INFO"
 func (lg *Logger) Info(format string, v ...interface{}) {
 	if lg.level <= INFO {
-		lg.Printf("INFO: "+format, v...)
+		lg.Output(2, fmt.Sprintf("INFO: "+format, v...))
 	}
 }
 
 // Warning log a message with severity "WARNING"
 func (lg *Logger) Warning(format string, v ...interface{}) {
 	if lg.level <= WARNING {
-		lg.Printf("WARNING: "+format, v...)
+		lg.Output(2, fmt.Sprintf("WARNING: "+format, v...))
 	}
+}
+
+// Warn log m message whth severity "WARNING"
+func (lg *Logger) Warn(format string, v ...interface{}) {
+	lg.Output(2, fmt.Sprintf("WARNING: "+format, v...))
 }
 
 // Error log a message with severity "ERROR"
 func (lg *Logger) Error(format string, v ...interface{}) {
 	if lg.level <= ERROR {
-		lg.Printf("ERROR: "+format, v...)
+		lg.Output(2, fmt.Sprintf("ERROR: "+format, v...))
 	}
 }

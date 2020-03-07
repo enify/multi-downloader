@@ -15,6 +15,9 @@ type AppConfig struct {
 
 	SaveDir     string `json:"save_dir"`
 	MaxRoutines int    `json:"max_routines"`
+	UseProxy    string `json:"use_proxy"` // "off":关闭，"system":环境代理，"user":自定代理
+	Proxy       string `json:"proxy"`
+	UserAgent   string `json:"user_agent"`
 }
 
 // NewAppConfig 返回 AppConfig 指针对象
@@ -36,9 +39,11 @@ func NewAppConfig(path string) (conf *AppConfig, err error) {
 	return
 }
 
+// initDefaulAppConfig 初始化默认配置
 func (c *AppConfig) initDefaultAppConfig() {
 	c.SaveDir, _ = filepath.Abs("./Downloads")
 	c.MaxRoutines = 10
+	c.UseProxy = "off"
 }
 
 // FileExist 检查配置文件是否存在
@@ -46,7 +51,7 @@ func (c *AppConfig) FileExist() bool {
 	filePath, _ := filepath.Abs(c.path)
 	_, err := os.Stat(filePath)
 
-	return os.IsExist(err)
+	return !os.IsNotExist(err)
 }
 
 // Save 保存配置信息到配置文件

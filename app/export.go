@@ -1,6 +1,8 @@
 package app
 
 import (
+	"encoding/json"
+
 	sciter "github.com/sciter-sdk/go-sciter"
 )
 
@@ -24,6 +26,46 @@ func initExportedFunctions(app *App) {
 			}
 		}
 		return sciter.NullValue()
+	}
+
+	def["getAppMeta"] = func(args ...*sciter.Value) *sciter.Value {
+		var r = sciter.NewValue()
+
+		data, _ := json.Marshal(app.meta)
+		r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
+
+		return r
+	}
+
+	def["getAppConfig"] = func(args ...*sciter.Value) *sciter.Value {
+		var r = sciter.NewValue()
+
+		data, _ := json.Marshal(app.conf)
+		r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
+
+		return r
+	}
+
+	def["getTasks"] = func(args ...*sciter.Value) *sciter.Value {
+		var r = sciter.NewValue()
+
+		data, _ := json.Marshal(app.ts.Tasks)
+		r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
+
+		return r
+	}
+
+	def["getUrlFilters"] = func(args ...*sciter.Value) *sciter.Value {
+		var r = sciter.NewValue()
+
+		filters := []string{}
+		for _, pr := range app.parsers {
+			filters = append(filters, pr.GetMeta().URLRgx)
+		}
+		data, _ := json.Marshal(filters)
+		r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
+
+		return r
 	}
 
 	for name, f := range def {

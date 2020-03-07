@@ -1,0 +1,131 @@
+@set download-view {
+    header {
+        flow: horizontal;
+        height: 40px;
+        background-color: color(view-header-bg-color);
+        overflow-y: hidden;
+    }
+
+    header > toolbar {
+        margin-top: *;
+        padding: 8px 4px;
+        background: transparent;
+    }
+
+    header > toolbar > button {
+        padding: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    header > toolbar > button > icon {
+        size: 18px;
+        padding: 0 0.3em;
+        fill: morph(color(icon-color), darken: 20%);
+    }
+
+    header > toolbar > br {
+        margin-left: 0.2em;
+        margin-right: 0.2em;
+        border-right: 1px solid rgb(187, 187, 187);
+    }
+
+    section {
+        flow: vertical;
+        height: *;
+    }
+
+    section > #task-table {
+        style-set: download-tasktable;
+        height: *;
+    }
+
+    footer {
+        flow: horizontal;
+        height: 30px;
+        background-color: green;
+    }
+
+    footer > p:last-child {
+        margin-left: *;
+    }
+
+    popup[role="tooltip"] {
+        background-color: rgb(242, 248, 249);
+    }
+
+    header > toolbar > button > icon:hover {
+        fill: morph(color(icon-color-actived), darken: 10%);
+        
+    }
+
+    header > toolbar > button > icon:active {
+        fill: morph(color(icon-color-actived), darken: 20%);
+    }
+
+    header > toolbar > button > icon:disabled {
+        fill: color(icon-color-disabled);
+    }
+}
+
+@set download-tasktable {
+    table {
+        height: *;
+    }
+
+    table th:nth-child(1) { width: 5*; }
+    table th:nth-child(2) { width: 2*; }
+    table th:nth-child(3) { width: 1*; }
+    table th:nth-child(4) { width: 1*; }
+
+    table td { height: 50px; }
+
+    .title {
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .progress {
+        flow: vertical;
+    }
+
+    .progress > .bar {
+        height: 0.4em;
+    }
+
+    .status > .text[type=pending] { color: #909399; }
+    .status > .text[type=running] { color: #67C23A; }
+    .status > .text[type=pause] { color: #E6A23C; }
+    .status > .text[type=error] { color: #F56C6C; }
+    .status > .text[type=done] {  }
+
+    .opt {
+        flow: horizontal;
+    }
+
+    .opt > button {
+        padding: 0px;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    .opt > button > icon {
+        padding: 0 0.3em;
+        fill: morph(color(icon-color), darken: 20%);
+    }
+
+    .opt > button > icon:hover {
+        fill: morph(color(icon-color-actived), darken: 10%);
+        
+    }
+
+    .opt > button > icon:active {
+        fill: morph(color(icon-color-actived), darken: 20%);
+    }
+
+    .opt > button > icon:disabled {
+        fill: color(icon-color-disabled);
+    }
+    
+}

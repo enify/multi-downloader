@@ -1,25 +1,23 @@
 package app
 
 import (
-	"fmt"
-	"time"
-
 	mo "./model"
 	"./parser"
+	"./request"
 	"./window"
 	"./worker"
-	"github.com/sciter-sdk/go-sciter"
 )
 
 // App 应用主struct
 type App struct {
-	meta    *mo.AppMeta
-	conf    *mo.AppConfig
-	ts      *mo.TaskStorage
-	lg      *Logger
-	wp      *worker.Pool
-	window  *window.Window
-	parsers map[string]parser.Parser
+	meta       *mo.AppMeta
+	conf       *mo.AppConfig
+	ts         *mo.TaskStorage
+	lg         *Logger
+	wp         *worker.Pool
+	window     *window.Window
+	httpclient *request.HTTPClient
+	parsers    map[string]parser.Parser
 }
 
 // New 返回 App 指针对象
@@ -46,14 +44,17 @@ func New(meta *mo.AppMeta) (app *App, err error) {
 		return
 	}
 
+	hc := request.NewHTTPClient()
+
 	app = &App{
-		meta:    meta,
-		conf:    conf,
-		ts:      ts,
-		lg:      lg,
-		wp:      wp,
-		window:  win,
-		parsers: map[string]parser.Parser{},
+		meta:       meta,
+		conf:       conf,
+		ts:         ts,
+		lg:         lg,
+		wp:         wp,
+		window:     win,
+		httpclient: hc,
+		parsers:    map[string]parser.Parser{},
 	}
 
 	return
@@ -65,6 +66,7 @@ func (app *App) Init() {
 
 	initWorkerPool(app)
 	initWindow(app)
+	initHTTPClient(app)
 	initParsers(app)
 
 	initExportedFunctions(app)
@@ -90,11 +92,25 @@ func initWindow(app *App) {
 	app.window.Init()
 }
 
+func initHTTPClient(app *App) {
+	app.lg.Info("init httpclient: useproxy:%s", app.conf.UseProxy)
+	c := app.httpclient
+	c.SetUserAgent(app.conf.UserAgent)
+	switch app.conf.UseProxy {
+	case "", "off":
+		//
+	case "system":
+		c.SetEnvProxy()
+	case "user":
+		c.SetProxy(app.conf.Proxy)
+	}
+}
+
 func initParsers(app *App) {
-	for _, p := range parser.RegisteredParsers {
-		meta := p.GetMeta()
-		app.parsers[meta.URLRgx] = p
-		app.lg.Info("register parser: name:%s, version:%s", meta.Name, meta.Version)
+	for _, pr := range parser.RegisteredParsers {
+		meta := pr.GetMeta()
+		app.parsers[meta.InternalName] = pr
+		app.lg.Info("register parser: name:%s, internal name:%s, version:%s", meta.Name, meta.InternalName, meta.Version)
 	}
 }
 
@@ -102,12 +118,22 @@ func initParsers(app *App) {
 func (app *App) Run() {
 	app.wp.Run()
 	app.window.Show()
-	go func() {
-		time.Sleep(5 * time.Second)
-		fmt.Println("发送事件到tis")
-		data := sciter.NewValue()
-		data.ConvertFromString(`{"key":"value"}`, sciter.CVT_JSON_LITERAL)
-		app.window.PostEvent("data_from_go", data)
-	}()
 	app.window.Run()
+}
+
+// Exit app
+func (app *App) Exit(msg string) (code int) {
+	app.lg.Info("exit: msg:%s", msg)
+
+	app.lg.Info("close work pool...")
+	app.wp.ShutDown()
+
+	app.lg.Info("storage tasks...")
+	app.ts.Save()
+
+	app.lg.Info("close window...")
+	app.window.Close()
+
+	app.lg.Info("exited")
+	return 0
 }

@@ -3,24 +3,28 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title></title>
-    <style>
-    </style>
-    <script type="text/tiscript">
-        // 发送事件到tis侧（供go调用）②
-        function postEvent(ename, edata) {
-            view.root.postEvent(ename, edata);
-        }
-    
-        $(#btn).on("click", function(){
-            view.postEvent("data_from_tis", "HELLO");
-        })
-    
-        self << event data_from_go(evt) { stdout.println(String.printf("process event:data_from_tis, data:%s, type:%s", evt.data, typeof(evt.data))); }
-    </script>
+    <style src="main.css" />
+    <script type="text/tiscript" src="main.tis" />
 </head>
 
 <body>
-    <button id="btn">Click Me</button>
+    <main>
+        <aside>
+            <header>
+                <h4>multi-downloader</h4>
+            </header>
+            <nav>
+                <li href="views/download.htm" .active>下载中</li>
+                <li href="views/complete.htm">已完成</li>
+                <li href="views/parser.htm">解析器</li>
+            </nav>
+            <footer>
+                <li href="views/setting.htm"><icon.icon-setting /></li>
+                <li href="views/about.htm"><icon.icon-about /></li>
+            </footer>
+        </aside>
+        <div #view></div>
+    </main>
 </body>
 
 </html>

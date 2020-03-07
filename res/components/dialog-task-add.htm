@@ -1,0 +1,95 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>新建任务</title>
+    <style>
+        .content {
+            padding: 0 10px;
+            font-size: 14px;
+            color: rgb(96,98,102);
+        }
+            
+        .content > input {
+            width: calc(100% - 11);
+            height: 25px;
+            border: 1px solid #dcdfe6;
+            border-radius: 3px;
+            color: rgb(96,98,102);
+            cursor: pointer;
+        }
+        
+        .content > input:focus {
+            border: 1px solid rgb(64, 158, 255);
+        }
+        
+        .content > #errmsg {
+            font-size: 14px;
+            margin: 3px 0 0 0;
+            color: red;
+        }
+        
+        .footer {
+            padding: 10px;
+            text-align: right;
+        }
+        
+        .footer > button {
+            font-size: 14px;
+            padding: 1px 10px;
+            margin-right: 3px;
+            border-radius: 3px;
+            color: rgb(255,255,255);
+            background: rgb(52,152,219);
+            cursor: pointer;
+        }
+        
+        .footer > button:hover {
+            color: rgb(255,255,255);
+            background: rgb(41,128,185);
+        }
+        
+        .footer > button:disabled {
+            background-color: rgba(52,152,219,.5);
+        }
+    </style>
+    
+    <script type="text/tiscript">
+        event change $(input) (evt,e) { $(button#ok).state.disabled = !(e.value.length > 0); }
+        event focus $(input) { $(#errmsg).text = ""; }
+
+        event click $(button#cancel) { view.close(); }
+        event click $(button#ok) {
+            var url = $(input).value;
+            var filters = view.parameters;
+            var support = false;
+            for (var rgx in filters) {
+                var r =new RegExp(rgx);
+                if (r.test(url)){
+                    support = true;
+                    break;
+                }
+            }
+            if (support) {
+                view.close(url);
+            } else {
+                $(#errmsg).text = "不支持的链接格式";
+            }
+        }
+        
+    </script>
+</head>
+
+<body>
+    <div.content>
+        <p>下载链接：</p>
+        <input|text />
+        <p#errmsg></p>
+    </div>
+    <div.footer>
+        <button#cancel>取消</button>
+        <button#ok disabled>确定</button>
+    </div>
+</body>
+
+</html>

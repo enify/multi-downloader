@@ -1,0 +1,8 @@
+namespace utils {
+    
+    function centerWindow() {
+        var (screenWidth, screenHeight) = view.screenBox(#workarea, #dimension);
+        var (windowWidth, windowHeight) = view.box(#dimension);
+    	view.move((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2, 792px,580px); 
+    }
+}

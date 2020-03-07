@@ -21,20 +21,26 @@ type (
 	Task struct {
 		mux sync.Mutex
 
-		URL    string            `json:"url"`
-		Status TaskStatus        `json:"status"`
-		Path   string            `json:"path"`
-		Meta   map[string]string `json:"meta"`
+		ID         string            `json:"id"`
+		URL        string            `json:"url"`
+		Status     TaskStatus        `json:"status"`
+		Path       string            `json:"path"`
+		Title      string            `json:"title"`
+		FileSize   int64             `json:"file_size"`
+		Preview    string            `json:"preview"` // 预览图的路径
+		Meta       map[string]string `json:"meta"`
+		ParserName string            `json:"parser_name"` // Parser内部名
+		Err        error             `json:"error"`
 
 		SubTasks []*SubTask `json:"subtasks"`
 	}
 
 	// SubTask 任务的子任务
 	SubTask struct {
+		FileName string     `json:"filename"`
 		URL      string     `json:"url"`
 		Status   TaskStatus `json:"status"`
-		FileName string     `json:"filename"`
-		ErrMsg   string     `json:"errmsg"`
+		Err      error      `json:"error"`
 	}
 )
 
@@ -61,7 +67,7 @@ func (ts *TaskStorage) FileExist() bool {
 	filePath, _ := filepath.Abs(ts.path)
 	_, err := os.Stat(filePath)
 
-	return os.IsExist(err)
+	return !os.IsNotExist(err)
 }
 
 // Save 保存任务到任务存储文件
@@ -80,4 +86,56 @@ func (ts *TaskStorage) Save() (err error) {
 	}
 
 	return
+}
+
+// Find find task by id
+func (ts *TaskStorage) Find(id string) (t *Task) {
+	for _, task := range ts.Tasks {
+		if id == task.ID {
+			return task
+		}
+	}
+	return nil
+}
+
+// AddTask add task to storage
+func (ts *TaskStorage) AddTask(t *Task) {
+	ts.mux.Lock()
+	ts.Tasks = append(ts.Tasks, t)
+	ts.mux.Unlock()
+
+	ts.Save()
+}
+
+// DeleteTask remove task from storage
+func (ts *TaskStorage) DeleteTask(t *Task) (deleted bool) {
+	for idx, task := range ts.Tasks {
+		if t.ID == task.ID {
+			ts.mux.Lock()
+			ts.Tasks = append(ts.Tasks[:idx], ts.Tasks[idx+1:]...)
+			ts.mux.Unlock()
+			deleted = true
+			break
+		}
+	}
+	ts.Save()
+	return
+}
+
+// HasTask check task exist or not
+func (ts *TaskStorage) HasTask(url string) bool {
+	for _, task := range ts.Tasks {
+		if url == task.URL {
+			return true
+		}
+	}
+
+	return false
+}
+
+// AddSubTask add subtask to task
+func (t *Task) AddSubTask(st *SubTask) {
+	t.mux.Lock()
+	defer t.mux.Unlock()
+	t.SubTasks = append(t.SubTasks, st)
 }

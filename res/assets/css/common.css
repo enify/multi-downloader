@@ -1,0 +1,24 @@
+html {
+    /* 说明：
+    * 颜色变量，使用：color(变量名)来引用
+    * 长度变量：使用：length(变量名)来引用
+    */
+    var(aside-bg-color): rgb(60, 72, 82);
+    var(view-bg-color): rgb(255, 255, 254);
+    var(view-header-bg-color): rgb(240, 240, 240);
+
+    var(text-color): rgb(176, 181, 185);
+    var(text-color-hoverd): rgb(253, 253, 253);
+    var(text-color-actived): rgb(81, 162, 253);
+
+    var(icon-color): color(text-color);
+    var(icon-color-hoverd): color(text-color-hoverd);
+    var(icon-color-actived): color(text-color-actived); 
+    var(icon-color-disabled): rgb(211, 211, 211);
+    
+}
+
+html:theme(dark) {
+    var(aside-bg-color): pink;
+    var(view-bg-color): yellow;
+}

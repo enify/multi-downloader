@@ -1,0 +1,69 @@
+include "libs/vlist.tis";
+
+include "export.tis";
+include "runtime/runtime.tis";
+include "utils/utils.tis";
+
+var EXIT_FLAG = false;  // 窗口退出标志
+
+function Init() {
+    view.windowIcon = self.url("assets/img/icon.png");
+    utils.centerWindow();
+}
+
+self.ready = function() {
+    Init();
+}
+
+class MainController : Element
+{
+    var currentRoute = "";
+
+    function attached() {
+        this.route($(aside li[href]:first-child).attributes["href"]);
+    }
+
+    function route(topage) {
+        if (currentRoute != topage) {
+            var v = $(#view);
+            v.update(::v.load(self.url(topage)));
+            currentRoute = topage;
+            this.postEvent("routechange", topage);
+        }
+    }
+
+    event click $(aside nav > li) (evt, e) {
+        for (var li in $$(aside nav>li)) {
+            li.attributes.removeClass("active");
+        };
+        e.attributes.addClass("active");
+    }
+
+    // route change
+    event click $(aside li[href]) (evt,e) { this.route(e.attributes["href"]); }
+
+    event toast (evt,e) { view.msgbox(#alert, JSON.stringify(evt.data)); }
+
+}
+
+event exit-app { EXIT_FLAG = true; view.close() }
+
+event closerequest (evt) {
+    if (EXIT_FLAG === true) {
+        view.close()
+    } else {
+        evt.cancel = true;
+        var r = view.msgbox({
+            type: #question,
+            title: "退出",
+            content: "确定要退出此应用吗？",
+            buttons: [
+                {id:#cancel, text:"取消", role:"cancel-button"},
+                {id:#yes, text:"确定", role:"default-button"},
+            ],
+        });
+        if (r === #yes) {
+            runtime.postEvent("close-request");
+        }
+    }
+}

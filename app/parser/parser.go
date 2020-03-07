@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	mo "../model"
+	"../request"
 )
 
 var (
@@ -16,9 +17,9 @@ type (
 	Parser interface {
 		GetMeta() Meta
 
-		Prepare(*mo.Task) error
-		AtSubTaskDone()
-		AtTaskDone()
+		Prepare(task *mo.Task, client *request.HTTPClient) error
+		AtSubTaskDone(subtask *mo.SubTask) error
+		AtTaskDone(task *mo.Task) error
 	}
 
 	// Meta is information of website support parser
@@ -26,11 +27,12 @@ type (
 		URLRgx   string `json:"urlrgx"`
 		Priority int    `json:"priority"`
 
-		Name        string `json:"name"`
-		Version     string `json:"version"`
-		Description string `json:"description"`
-		Author      string `json:"autor"`
-		Link        string `json:"link"`
+		Name         string `json:"name"`
+		InternalName string `json:"internal_name"`
+		Version      string `json:"version"`
+		Description  string `json:"description"`
+		Author       string `json:"autor"`
+		Link         string `json:"link"`
 	}
 )
 

@@ -1,6 +1,7 @@
 package window
 
 import (
+	"fmt"
 	"path/filepath"
 
 	sciter "github.com/sciter-sdk/go-sciter"
@@ -35,7 +36,7 @@ func New(title, mainpage string) (window *Window, err error) {
 
 // Init window
 func (w *Window) Init() {
-	w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL|sciter.ALLOW_FILE_IO)
+	w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL|sciter.ALLOW_FILE_IO|sciter.ALLOW_SYSINFO)
 }
 
 // InitDebugOptions 调试模式下的设置
@@ -59,4 +60,18 @@ func (w *Window) PostEvent(event string, data *sciter.Value) {
 
 	evt.SetString(event)
 	w.Call("postEvent", evt, data)
+}
+
+// Toast 发送toast消息到tis侧
+func (w *Window) Toast(mtype, msg string, v ...interface{}) {
+	var data = sciter.NewValue()
+
+	data.Set("type", mtype)
+	data.Set("msg", fmt.Sprintf(msg, v...))
+	w.PostEvent("toast", data)
+}
+
+// Close 通过tis端handle此事件来关闭
+func (w *Window) Close() {
+	w.PostEvent("exit-app", sciter.NullValue())
 }

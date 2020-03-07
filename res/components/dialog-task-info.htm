@@ -1,0 +1,120 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>任务属性</title>
+    <style>
+        #task-info {
+            flow: vertical;
+        }
+
+        .header {
+            padding-left: 5px;
+            border-left: 5px solid rgb(1, 120, 254);
+        }
+
+        .info,
+        .meta {
+            margin-left: 10px;
+        }
+
+        .info > li,
+        .meta > li {
+            margin-bottom: 0.2em;
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            color: rgb(137, 139, 145);
+        }
+
+        .detail {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .detail > tbody {
+            height: 7em;
+            overflow-y: scroll-indicator;
+        }
+
+        .detail, th, td {
+            border: 1px solid #E5E5E5;
+            text-align: left;
+        }
+
+        .detail td:nth-child(2) {
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview {
+            height: 170px;
+            width: 128px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+    </style>
+    
+    <script type="text/tiscript">
+        self.ready = function() {
+            var task = view.parameters;
+
+            this.$(#task-info).content(<div>
+                <h4.header>任务详情</h4>
+                <div.info>
+                    <li>任务ID：  { task.id }</li>
+                    <li>任务标题：  { task.title }</li>
+                    <li>任务状态：  { task.status == "error" ? <span style="color:red;">{ String.printf("error (%s)", task.error) }</span> : task.status }</li>
+                    <li>文件大小：  { task.file_size }</li>
+                    <li>存储路径：  { task.path }</li>
+                    <li>解析器名：  { task.parser_name }</li>
+
+                </div>
+                <h4.header>子任务</h4>
+                <table.detail>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>文件</th>
+                            <th>状态</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>{
+                        task.subtasks.map((subtask, index) => <tr>
+                            <td>{ index+1 }</td>
+                            <td>{ subtask.filename }</td>
+                            <td>{ subtask.status == "error" ? <span style="color:red;">{ subtask.error }</span> : subtask.status }</td>
+                            <td>
+                                <a href={ subtask.url }>link</a>
+                            </td>
+                        </tr>)
+                    }</tbody>
+                </table>
+                <h4.header>附加信息</h4>
+                <div.meta>{
+                    Object.keys(task.meta).map((k) => <li>
+                        { k }：  { task.meta[k] }
+                    </li>)
+                }</div>
+                <h4.header>预览图</h4>
+                { task.preview != "" ? <img.preview src={ task.preview } title={ task.preview } /> : <p>无</p> }
+            </div>);
+        }
+
+        event click $(.detail > tbody a) (evt,e) {
+            view.clipboard(#put, e.attributes["href"]);
+            view.msgbox(#information, "已复制到剪切板！", "提示");
+        }
+
+        event click $(img.preview) (evt,e) { Sciter.launch(e.attributes["title"]); }
+    </script>
+</head>
+
+<body#task-info>
+    
+</body>
+
+</html>

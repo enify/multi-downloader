@@ -1,0 +1,8 @@
+// 导出到go端的函数
+
+
+// 发送事件到tis侧（供go调用）②
+function postEvent(ename, edata) {
+    // view.root.postEvent(ename, edata);
+    $(main).postEvent(ename, edata);
+}

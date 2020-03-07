@@ -1,0 +1,190 @@
+class ViewController : Element {
+    this var tasktable;
+
+    function attached() {
+        this.$(#task-table).content(<VTable multiselect sortable recordset={ this.preProcess(runtime.apptasks) } @{ this.tasktable }>
+                <columns>
+                    <th>标题</th>
+                    <th>进度</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </columns>
+                {
+                    function(record, index) {
+                        return
+                            <tr key={ record.key }
+                                :current={ this.isCurrent(record) }
+                                :checked={ this.isSelected(record) }>
+                                <td.title title={ record.title }>{ record.title }</td>
+                                <td.progress>
+                                    <progress.bar max="100" value={ record._progressBarValue } />
+                                    <small.text>{ record._progressText }</small>
+                                </td>
+                                <td.status>
+                                    <span.text type={ record.status }>{ record._statusText }</span>
+                                </td>
+                                <td.opt>
+                                    <button#task-folder title="打开下载目录" path={ record.path }><icon.icon-folder /></button>
+                                    <button#task-info title="任务属性" index={ index }><icon.icon-info /></button>
+                                </td>
+                            </tr>
+                    }
+                }
+            </VTable>);
+        
+        this.timer(2s, function() {
+            this.tasktable.update({ recordset: preProcess(runtime.apptasks) });
+            this.$(#errmsg).text = (new Date()).toLocaleString(#time);
+            return true;
+        });
+    }
+
+    function preProcess(tasks) {
+        var result = [];
+        for (var task in tasks) {
+            var done = 0;
+            for (var subtask in task.subtasks) {
+                if (subtask.status == "done") {
+                    done ++
+                }
+            }
+            task.key = task.id;
+            task._progressBarValue = task.subtasks.length === 0 ? 0 : Math.round(done.toFloat() / task.subtasks.length *10000) / 100;
+            task._progressText = String.printf("%d/%d", done, task.subtasks.length);
+            task._statusText = {"pending": "等待中", "running": "下载中", "pause": "暂停", "done": "已完成", "error": "错误"}[task.status];
+
+            result.push(task);
+        }
+        return result;
+    }
+
+    // get ids of task to be operatted by toolbar
+    function getOptTasks(vtable) {
+        var ids = [];
+        var currentRecordKey = vtable.currentRecord === null ? "" : vtable.currentRecord.key;
+        var selectedRecordKeys = Object.keys(vtable.selectedRecords);
+
+        if (selectedRecordKeys.length > 0) {
+            ids = selectedRecordKeys;
+        } else if (currentRecordKey != "") {
+            ids = [currentRecordKey, ];
+        }
+        return ids;
+    }
+
+    function setToolbarState(vtable) {
+        var records = [];
+        var count = {"pending":0, "running":0, "pause":0, "done":0, "error":0};
+
+        if (vtable.selectedRecords.length > 0) {
+            for (var k in Object.keys(vtable.selectedRecords)) {
+                records.push(vtable.selectedRecords[k]);
+            }
+        } else if (vtable.currentRecord != null) {
+            records.push(vtable.currentRecord);
+        }
+        for (var r in records) {
+            if (r.status in count) {
+                count[r.status] ++
+            }
+        }
+        $(button#start-task).state.disabled = count.pause + count.error == 0;
+        $(button#pause-task).state.disabled = count.running == 0;
+        $(button#delete-task).state.disabled = count.pending + count.running + count.pause + count.done + count.error == 0;
+        $(button#remove-task).state.disabled = count.pending + count.running + count.pause + count.done + count.error == 0;
+    }
+
+    event mouseup $(#task-table tbody > tr) { setToolbarState(this.tasktable); }
+    event keyup $(#task-table tbody) { setToolbarState(this.tasktable); }
+    event click $(button#select-all) { setToolbarState(this.tasktable); }
+
+    event click $(button#add-task) {
+        var filters = runtime.urlfilters;
+        var url = view.dialog({
+            url: self.url("components/dialog-task-add.htm"),
+            width: 400,
+            alignment: 5,
+            parameters: filters,
+        });
+        if (url) {
+            runtime.postEvent("task-added", url);
+        }
+    }
+
+    event click $(button#start-task) {
+        var ids = getOptTasks(this.tasktable);
+        runtime.postEvent("task-started", ids);
+        this.tasktable.selectedRecords = {};
+        this.tasktable.currentRecord = null;
+    }
+
+    event click $(button#pause-task) {
+        var ids = getOptTasks(this.tasktable);
+        runtime.postEvent("task-paused", ids);
+        this.tasktable.selectedRecords = {};
+        this.tasktable.currentRecord = null;
+    }
+
+    event click $(button#delete-task) {
+        var ids = getOptTasks(this.tasktable);
+        var r = view.msgbox({
+            type: #question,
+            title: "删除任务",
+            content: String.printf("<p>确定要删除选中的 %d 项任务吗？</p><small>硬盘上的文件不会被删除</small>", ids.length),
+            buttons: [
+                {id:#cancel, text:"取消", role:"cancel-button"},
+                {id:#yes, text:"确定", role:"default-button"},
+            ],
+        });
+        if (r == #yes) {
+            runtime.postEvent("task-deleted", ids);
+            this.tasktable.selectedRecords = {};
+            this.tasktable.currentRecord = null;
+        }
+    }
+
+    event click $(button#remove-task) {
+        var ids = getOptTasks(this.tasktable);
+        var r = view.msgbox({
+            type: #question,
+            title: "彻底删除任务",
+            content: String.printf("<p>确定要删除选中的 %d 项任务吗？</p><small>硬盘上的文件也会被删除</small>", ids.length),
+            buttons: [
+                {id:#cancel, text:"取消", role:"cancel-button"},
+                {id:#yes, text:"确定", role:"default-button"},
+            ],
+        });
+        if (r == #yes) {
+            runtime.postEvent("task-removed", ids);
+            this.tasktable.selectedRecords = {};
+            this.tasktable.currentRecord = null;
+        }
+    }
+
+    event click $(button#select-all) {
+        if (this.tasktable.selectedRecords.length == this.tasktable.recordset.length) {
+            this.tasktable.selectedRecords = {};
+        } else {
+            function reducer(map, record) { map[record.key] = record; return map; }
+            this.tasktable.selectedRecords = this.tasktable.recordset.reduce(reducer, {});
+        }
+    }
+
+    event click $(button#exit-app) { view.close(); }
+
+    event click $(button#task-folder) (evt,e) {
+        Sciter.launch(e.attributes["path"]);
+    }
+
+    event click $(button#task-info) (evt,e) {
+        var idx = e.attributes["index"].toInteger();
+        view.dialog({
+            url: self.url("components/dialog-task-info.htm"),
+            width: 500,
+            height: 580,
+            alignment: -8,
+            parameters: this.tasktable.recordset[idx],
+        });
+    }
+
+}

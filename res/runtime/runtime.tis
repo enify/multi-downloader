@@ -1,0 +1,23 @@
+namespace runtime {
+    property appmeta(v) {
+        get { return view.getAppMeta(); }
+    }
+
+    property appconfig(v) {
+        get { return view.getAppConfig(); }
+    }
+
+    property apptasks(v) {
+        get { return view.getTasks(); }
+    }
+
+    property urlfilters(v) {
+        get { return view.getUrlFilters(); }
+    }
+
+    function postEvent(event, data..) {
+        view.postEvent(event, ..data);
+    }
+
+    
+}

@@ -1,0 +1,103 @@
+@import url("assets/css/common.css");
+@import url("assets/css/fontello-svg.css");
+
+@import url("views/download.css");
+
+body { 
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    flow: horizontal;
+    prototype: MainController;
+    height: *;
+}
+
+main aside {
+    style-set: main-aside-style;
+}
+
+main #view {
+    display: block;
+    flow: vertical;
+    width: *;
+    height: *;
+    vertical-align: top;
+    background-color: color(view-bg-color);
+}
+
+@set main-aside-style {
+    :root {
+        display: block;
+        flow: vertical;
+        width: 150px;
+        height: *;
+        background-color: color(aside-bg-color);
+    }
+
+    header {
+        height: 40px;
+        text-align: center;
+        color: rgb(194, 197, 200);
+        border-bottom: 1px solid #525965;
+        overflow-y: hidden;
+    }
+
+    nav {
+        padding-top: 5px;
+        margin-bottom: *;
+    }
+
+    nav > li {
+        display: block;
+        font-size: 1.2em;
+        text-align: center;
+        padding: 10px 0px;
+        cursor: pointer;
+        color: color(text-color);
+    }
+
+    footer {
+        flow: horizontal;
+        height: 30px;
+        text-align: center;
+        border-top: 1px solid #525965;
+        color: color(text-color);
+    }
+
+    footer > li {
+        width: *;
+        font-size: 1.2em;
+        margin-top: 5px;
+        cursor: pointer;
+        border-right: 1px solid #525965;
+    }
+
+    footer > li > icon {
+        fill: color(icon-color);
+    }
+
+    nav > li:hover,
+    footer > li > icon:hover
+    {
+        fill: color(icon-color-hoverd);
+        color: color(text-color-hoverd);
+    }
+
+    nav > li:hover {
+        background-color: rgb(49, 58, 66);
+    }
+
+    nav > li.active,
+    footer > li > icon:active
+    {
+        fill: color(icon-color-actived);
+        color: color(text-color-actived);
+    }
+
+    nav > li.active {
+        background-color: rgb(37, 44, 50);
+    }
+
+}
