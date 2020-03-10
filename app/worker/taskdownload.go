@@ -78,8 +78,10 @@ func (w *TaskDownloadWork) Do() (err error) {
 		count[t.Status]++
 	}
 	if count[mo.StatusDone] == len(w.Task.SubTasks) {
+		w.Task.FinishAt = time.Now()
 		w.Task.Status = mo.StatusDone
 	} else if count[mo.StatusError] > 0 && count[mo.StatusError]+count[mo.StatusDone] == len(w.Task.SubTasks) {
+		w.Task.FinishAt = time.Now()
 		w.Task.Status = mo.StatusError
 	}
 

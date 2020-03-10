@@ -1,0 +1,16 @@
+@set about-view {
+    #appmeta {
+        flow: vertical; 
+        margin: 10px;
+        text-align: center;
+    }
+
+    .title {
+        font-size: 1.2em;
+    }
+
+    .desc {
+        font-size: 0.9em;
+        color: color(text-color-faded);
+    }
+}

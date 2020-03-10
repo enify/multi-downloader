@@ -1,0 +1,70 @@
+@set parser-view {
+    #parser-list {
+        style-set: parser-parserlist;
+        height: *;
+        overflow-y: scroll-indicator;
+    }
+}
+
+@set parser-parserlist {
+    ul {
+        padding: 0;
+        margin: 5px 15px;
+        list-style-type: none;
+    }
+
+    li {
+        margin-bottom: 8px;
+        border: 1px solid rgb(187, 187, 187);
+        border-radius: 5px;
+        background-color: rgb(241, 244, 247);
+    }
+
+    li > .container {
+        margin: 5px;
+    }
+
+    li  header > .title {
+        font-size: 1.2em;
+    }
+
+    li header > .desc {
+        font-size: 0.9em;
+        margin: 0.2em 0.2em;
+        color: color(text-color-faded);
+    }
+
+    li section > div {
+        margin: 6px;
+    }
+
+    li  footer {
+        flow: horizontal;
+        font-size: 0.9em;
+        padding-top: 3px;
+        border-top: 1px solid rgb(187, 187, 187);
+        color: color(text-color-faded);
+    }
+
+    li  footer > div:last-child {
+        margin-left: *;
+    }
+
+    li footer a.visible {
+        visibility: visible;
+    }
+
+    li footer a.hidden {
+        display: none;
+    }
+
+    li footer icon {
+        size: 1em;
+        margin-left: 8px;
+        fill: color(text-color-faded);
+    }
+
+    li footer icon:hover {
+        fill: morph(color(icon-color-actived), darken: 10%);
+    }
+}

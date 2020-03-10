@@ -11,6 +11,10 @@ namespace runtime {
         get { return view.getTasks(); }
     }
 
+    property appparsers(v) {
+        get { return view.getParsers(); }
+    }
+
     property urlfilters(v) {
         get { return view.getUrlFilters(); }
     }

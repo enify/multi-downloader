@@ -1,0 +1,62 @@
+@set setting-view {
+    #setting {
+        style-set: setting-panel;
+    }
+}
+
+@set setting-panel {
+    form {
+        flow: row(label, section);
+        margin: 10px;
+        width: *;
+    }
+
+    form > label {
+        width: max-content;
+        font-weight: bold;
+    }
+
+    form > section {
+        flow: vertical;
+        width: max-content;
+    }
+
+    form > section > span {
+        flow: horizontal;
+        display: block;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    button > icon {
+        padding: 0 0.3em;
+        fill: morph(color(icon-color), darken: 20%);
+    }
+
+    button > icon:hover {
+        fill: morph(color(icon-color-actived), darken: 10%);
+    }
+
+    button#select-folder {
+        background: transparent;
+    }
+
+    button#save-config {
+        margin-top: 10px;
+        padding: 0px 25px;
+        background: transparent;
+        border: 1px solid rgb(187, 187, 187);
+        border-radius: 5px;
+    }
+
+    button#save-config:hover {
+        color: color(text-color-hoverd);
+        background: morph(color(icon-color-actived), darken: 10%);
+    }
+
+    button#save-config:active {
+        background: morph(color(icon-color-actived), darken: 20%);
+    }
+}

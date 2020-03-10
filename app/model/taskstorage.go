@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 type (
@@ -29,6 +30,8 @@ type (
 		FileSize   int64             `json:"file_size"`
 		Preview    string            `json:"preview"` // 预览图的路径
 		Meta       map[string]string `json:"meta"`
+		CreateAt   time.Time         `json:"create_at"`
+		FinishAt   time.Time         `json:"finish_at"`
 		ParserName string            `json:"parser_name"` // Parser内部名
 		Err        error             `json:"error"`
 

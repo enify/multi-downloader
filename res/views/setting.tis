@@ -1,0 +1,88 @@
+class SettingView : Element {
+    this var setting;
+
+    function attached() {
+        this.$(#setting).content(<SettingPanel @{ this.setting } confset={ runtime.appconfig } />);
+    }
+
+    event save-config $(#setting) (evt,e) {
+        runtime.postEvent("config-changed", evt.data);
+    }
+}
+
+class SettingPanel : Reactor.Component {
+    this var confset = null;
+
+    function this(props) {
+        this.confset = props.confset;
+    }
+
+    function render() {
+        return <form>
+            <label>下载路径：</label>
+            <section>
+                <span>
+                    <input|text :value={ this.confset.save_dir } />
+                    <button#select-folder><icon.icon-folder /></button>
+                </span>
+            </section>
+            <label>任务设置：</label>
+            <section>
+                <span>
+                    最大连接数：
+                    <input|hslider.routines :value={ this.confset.max_routines } min="1" max="100" step="1" />
+                    <span>{ this.confset.max_routines }</span>
+                </span>
+            </section>
+            <label>请求设置：</label>
+            <section>
+                <br/>
+                <span>
+                    User-Agent：
+                    <input|text.ua :value={ this.confset.user_agent } />
+                </span>
+            </section>
+            <label>代理设置：</label>
+            <section>
+                <button|radio value="off" :checked={ this.confset.use_proxy == "off" }>不使用</button>
+                <button|radio value="system" :checked={ this.confset.use_proxy == "system" }>使用环境代理</button>
+                <span>
+                    <button|radio value="user" :checked={ this.confset.use_proxy == "user" }>自定义代理服务器</button>
+                    <input|text.proxy :value={ this.confset.proxy } :disabled={ this.confset.use_proxy != "user" } />
+                </span>
+            </section>
+            <label></label>
+            <section><button#save-config>保存</button></section>
+        </form>;
+    }
+
+    event click $(button#select-folder) {
+        var r = view.selectFolder("浏览文件夹", this.confset.save_dir);
+        if (r) {
+            this.confset.save_dir = URL.toPath(r);
+            this.update();
+        }
+    }
+
+    event click $(button#save-config) {
+        this.postEvent("save-config", this.confset);
+    }
+
+    event change $(input.routines) (ect,e) {
+        this.confset.max_routines = e.value;
+        this.update();
+    }
+
+    event change $(input.ua) (evt,e) {
+        this.confset.user_agent = e.value;
+    }
+
+    event change $(button[type=radio]) (evt,e) {
+        this.confset.use_proxy = e.value;
+        this.update();
+    }
+
+    event change $(input.proxy) (evt,e) {
+        this.confset.proxy = e.value;
+    }
+}

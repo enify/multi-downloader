@@ -14,6 +14,7 @@ var (
 	meta = &model.AppMeta{
 		AppName:         "multi-Downloader",
 		Version:         "0.0.1",
+		Description:     "多功能下载器项目，可通过解析器来适配更多网站支持",
 		MainPage:        "./res/App.htm",
 		ConfigPath:      "./Config.json",
 		TaskStoragePath: "./TaskStorage.json",

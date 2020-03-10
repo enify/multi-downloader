@@ -2,6 +2,10 @@
 @import url("assets/css/fontello-svg.css");
 
 @import url("views/download.css");
+@import url("views/complete.css");
+@import url("views/parser.css");
+@import url("views/setting.css");
+@import url("views/about.css");
 
 body { 
     margin: 0;
@@ -78,6 +82,11 @@ main #view {
         fill: color(icon-color);
     }
 
+    popup[role="tooltip"] {
+        popup-position: bottom-center top-center;
+        background-color: rgb(242, 248, 249);
+    }
+
     nav > li:hover,
     footer > li > icon:hover
     {
@@ -89,8 +98,8 @@ main #view {
         background-color: rgb(49, 58, 66);
     }
 
-    nav > li.active,
-    footer > li > icon:active
+    li.active,
+    li.active > icon
     {
         fill: color(icon-color-actived);
         color: color(text-color-actived);

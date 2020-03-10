@@ -1,37 +1,30 @@
-class DownloadView : Element {
+class CompleteView : Element {
     this var tasktable;
 
     function attached() {
         this.$(#task-table).content(<VTable multiselect sortable recordset={ this.preProcess(runtime.apptasks) } @{ this.tasktable }>
-                <columns>
-                    <th>标题</th>
-                    <th>进度</th>
-                    <th>状态</th>
-                    <th>操作</th>
-                </columns>
-                {
-                    function(record, index) {
-                        return
-                            <tr key={ record.key }
-                                :current={ this.isCurrent(record) }
-                                :checked={ this.isSelected(record) }>
-                                <td.title title={ record.title }>{ record.title }</td>
-                                <td.progress>
-                                    <progress.bar max="100" value={ record._progressBarValue } />
-                                    <small.text>{ record._progressText }</small>
-                                </td>
-                                <td.status>
-                                    <span.text type={ record.status }>{ record._statusText }</span>
-                                </td>
-                                <td.opt>
-                                    <button#task-folder title="打开下载目录" path={ record.path }><icon.icon-folder /></button>
-                                    <button#task-info title="任务属性" index={ index }><icon.icon-info /></button>
-                                </td>
-                            </tr>
-                    }
+            <columns>
+                <th>标题</th>
+                <th>完成时间</th>
+                <th>操作</th>
+            </columns>
+            {
+                function(record, index) {
+                    return
+                        <tr key={ record.key }
+                            :current={ this.isCurrent(record) }
+                            :checked={ this.isSelected(record) }>
+                            <td.title title={ record.title }>{ record.title }</td>
+                            <td>{ (new Date(record.create_at)).toString("%Y-%m-%d %H:%M:%S") }</td>
+                            <td.opt>
+                                <button#task-file title="打开文件" path={ record._taskFileBtnPath } class={ record._taskFileBtnClass }><icon.icon-file /></button>
+                                <button#task-folder title="打开下载目录" path={ record.path }><icon.icon-folder /></button>
+                                <button#task-info title="任务属性" index={ index }><icon.icon-info /></button>
+                            </td>
+                        </tr>
                 }
-            </VTable>);
-        
+            }
+        </VTable>);
         this.timer(2s, function() {
             this.tasktable.update({ recordset: preProcess(runtime.apptasks) });
             this.$(#errmsg).text = (new Date()).toLocaleString(#time);
@@ -42,17 +35,10 @@ class DownloadView : Element {
     function preProcess(tasks) {
         var result = [];
         for (var task in tasks) {
-            if (task.status != "done") {
-                var done = 0;
-                for (var subtask in task.subtasks) {
-                    if (subtask.status == "done") {
-                        done ++
-                    }
-                }
+            if (task.status == "done") {
                 task.key = task.id;
-                task._progressBarValue = task.subtasks.length === 0 ? 0 : Math.round(done.toFloat() / task.subtasks.length *10000) / 100;
-                task._progressText = String.printf("%d/%d", done, task.subtasks.length);
-                task._statusText = {"pending": "等待中", "running": "下载中", "pause": "暂停", "done": "已完成", "error": "错误"}[task.status];
+                task._taskFileBtnPath = task.subtasks.length === 1 ? task.path + "/" + task.subtasks[0].filename : "";
+                task._taskFileBtnClass = task.subtasks.length === 1 ? "visible" : "hidden";
 
                 result.push(task);
             }
@@ -75,25 +61,9 @@ class DownloadView : Element {
     }
 
     function setToolbarState(vtable) {
-        var records = [];
-        var count = {"pending":0, "running":0, "pause":0, "done":0, "error":0};
-
-        if (vtable.selectedRecords.length > 0) {
-            for (var k in Object.keys(vtable.selectedRecords)) {
-                records.push(vtable.selectedRecords[k]);
-            }
-        } else if (vtable.currentRecord != null) {
-            records.push(vtable.currentRecord);
-        }
-        for (var r in records) {
-            if (r.status in count) {
-                count[r.status] ++
-            }
-        }
-        $(button#start-task).state.disabled = count.pause + count.error == 0;
-        $(button#pause-task).state.disabled = count.running == 0;
-        $(button#delete-task).state.disabled = count.pending + count.running + count.pause + count.done + count.error == 0;
-        $(button#remove-task).state.disabled = count.pending + count.running + count.pause + count.done + count.error == 0;
+        var ids = getOptTasks(vtable);
+        $(button#delete-task).state.disabled = ids.length == 0;
+        $(button#remove-task).state.disabled = ids.length == 0;
     }
 
     event mouseup $(#task-table tbody > tr) { setToolbarState(this.tasktable); }
@@ -111,20 +81,6 @@ class DownloadView : Element {
         if (url) {
             runtime.postEvent("task-added", url);
         }
-    }
-
-    event click $(button#start-task) {
-        var ids = getOptTasks(this.tasktable);
-        runtime.postEvent("task-started", ids);
-        this.tasktable.selectedRecords = {};
-        this.tasktable.currentRecord = null;
-    }
-
-    event click $(button#pause-task) {
-        var ids = getOptTasks(this.tasktable);
-        runtime.postEvent("task-paused", ids);
-        this.tasktable.selectedRecords = {};
-        this.tasktable.currentRecord = null;
     }
 
     event click $(button#delete-task) {
@@ -174,6 +130,10 @@ class DownloadView : Element {
 
     event click $(button#exit-app) { view.close(); }
 
+    event click $(button#task-file) (evt,e) {
+        Sciter.launch(e.attributes["path"]);
+    }
+
     event click $(button#task-folder) (evt,e) {
         Sciter.launch(e.attributes["path"]);
     }
@@ -188,5 +148,5 @@ class DownloadView : Element {
             parameters: this.tasktable.recordset[idx],
         });
     }
-
+    
 }

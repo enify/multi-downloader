@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 
+	"./parser"
 	sciter "github.com/sciter-sdk/go-sciter"
 )
 
@@ -50,6 +51,19 @@ func initExportedFunctions(app *App) {
 		var r = sciter.NewValue()
 
 		data, _ := json.Marshal(app.ts.Tasks)
+		r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
+
+		return r
+	}
+
+	def["getParsers"] = func(args ...*sciter.Value) *sciter.Value {
+		var r = sciter.NewValue()
+
+		metas := []parser.Meta{}
+		for _, pr := range app.parsers {
+			metas = append(metas, pr.GetMeta())
+		}
+		data, _ := json.Marshal(metas)
 		r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
 
 		return r

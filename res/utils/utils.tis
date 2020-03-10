@@ -5,4 +5,15 @@ namespace utils {
         var (windowWidth, windowHeight) = view.box(#dimension);
     	view.move((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2, 792px,580px); 
     }
+
+    function bytesToSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+        const i = (Math.floor(Math.log(bytes) / Math.log(k))).toInteger();
+
+        return ((bytes / Math.pow(k, i) *100).toInteger() / 100.0).toString() + " " + sizes[i];
+    }
 }

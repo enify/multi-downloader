@@ -10,6 +10,7 @@ html {
     var(text-color): rgb(176, 181, 185);
     var(text-color-hoverd): rgb(253, 253, 253);
     var(text-color-actived): rgb(81, 162, 253);
+    var(text-color-faded): rgb(102, 102, 102);
 
     var(icon-color): color(text-color);
     var(icon-color-hoverd): color(text-color-hoverd);

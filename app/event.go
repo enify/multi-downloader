@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -69,6 +70,7 @@ func initEventHandlers(app *App) {
 			Status:     mo.StatusPending,
 			Path:       app.conf.SaveDir,
 			Meta:       map[string]string{},
+			CreateAt:   time.Now(),
 			ParserName: pr.GetMeta().InternalName,
 			SubTasks:   []*mo.SubTask{},
 		}
@@ -128,6 +130,7 @@ func initEventHandlers(app *App) {
 					task.Status = mo.StatusPending
 					task.Path = app.conf.SaveDir // clean task
 					task.Meta = map[string]string{}
+					task.FinishAt = time.Time{}
 					task.SubTasks = []*mo.SubTask{}
 					err := pr.Prepare(task, app.httpclient)
 					if err != nil {
@@ -214,6 +217,24 @@ func initEventHandlers(app *App) {
 					os.Remove(task.Path)
 				}
 				app.lg.Info("removeTask: id:%s", task.ID)
+			}
+		}
+	})
+
+	w.AddEventHandler("config-changed", func(args ...*sciter.Value) {
+		data := args[0]
+
+		err := data.ConvertToString(sciter.CVT_JSON_LITERAL)
+		if err != nil {
+			w.Toast("warn", "配置格式有误：%s", err)
+		} else {
+			err := json.Unmarshal([]byte(data.String()), app.conf)
+			if err != nil {
+				w.Toast("warn", "配置保存失败：%s", err)
+			} else {
+				app.conf.Save()
+				w.Toast("info", "配置保存成功，重启后生效")
+				app.lg.Info("changeConfig: done")
 			}
 		}
 	})

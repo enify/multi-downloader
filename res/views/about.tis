@@ -1,0 +1,13 @@
+class AboutView : Element {
+    
+    function attached() {
+        var meta = runtime.appmeta;
+
+        this.$(#appmeta).content(<div>
+            <h3.title>{ meta.appname }</h3>
+            <p.version>版本：{ meta.version }</p>
+            <div.desc>{ meta.description }</div>
+            <p>Powered By Golang and Sicter</p>
+        </div>);
+    }
+}

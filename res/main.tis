@@ -32,15 +32,15 @@ class MainController : Element
         }
     }
 
-    event click $(aside nav > li) (evt, e) {
-        for (var li in $$(aside nav>li)) {
+    // route change
+    event click $(aside li[href]) (evt,e) { 
+        for (var li in $$(aside li[href])) {
             li.attributes.removeClass("active");
         };
         e.attributes.addClass("active");
-    }
 
-    // route change
-    event click $(aside li[href]) (evt,e) { this.route(e.attributes["href"]); }
+        this.route(e.attributes["href"]); 
+    }
 
     event toast (evt,e) { view.msgbox(#alert, JSON.stringify(evt.data)); }
 

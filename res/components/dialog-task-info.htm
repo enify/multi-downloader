@@ -6,6 +6,8 @@
     <style>
         #task-info {
             flow: vertical;
+            margin-right: 0;
+            overflow-y: scroll-indicator;
         }
 
         .header {
@@ -24,7 +26,7 @@
             white-space: nowrap;
             overflow-x: hidden;
             text-overflow: ellipsis;
-            color: rgb(137, 139, 145);
+            color: rgb(102, 102, 102);
         }
 
         .detail {
@@ -58,6 +60,8 @@
     </style>
     
     <script type="text/tiscript">
+        include "../utils/utils.tis";
+
         self.ready = function() {
             var task = view.parameters;
 
@@ -67,9 +71,11 @@
                     <li>任务ID：  { task.id }</li>
                     <li>任务标题：  { task.title }</li>
                     <li>任务状态：  { task.status == "error" ? <span style="color:red;">{ String.printf("error (%s)", task.error) }</span> : task.status }</li>
-                    <li>文件大小：  { task.file_size }</li>
-                    <li>存储路径：  { task.path }</li>
+                    <li>文件大小：  { utils.bytesToSize(task.file_size) }</li>
+                    <li>存储路径：  <a.path href={ task.path }>{ task.path }</a></li>
                     <li>解析器名：  { task.parser_name }</li>
+                    <li>创建时间：  { (new Date(task.create_at)).toString("%Y-%m-%d %H:%M:%S") }</li>
+                    <li>完成时间：  { (new Date(task.finish_at)).toString("%Y-%m-%d %H:%M:%S") }</li>
 
                 </div>
                 <h4.header>子任务</h4>
@@ -88,7 +94,7 @@
                             <td>{ subtask.filename }</td>
                             <td>{ subtask.status == "error" ? <span style="color:red;">{ subtask.error }</span> : subtask.status }</td>
                             <td>
-                                <a href={ subtask.url }>link</a>
+                                <a.link href={ subtask.url }>link</a>
                             </td>
                         </tr>)
                     }</tbody>
@@ -104,7 +110,12 @@
             </div>);
         }
 
-        event click $(.detail > tbody a) (evt,e) {
+        event click $(.info a.path) (evt,e) {
+            Sciter.launch(e.attributes["href"]);
+            return true;
+        }
+
+        event click $(.detail a.link) (evt,e) {
             view.clipboard(#put, e.attributes["href"]);
             view.msgbox(#information, "已复制到剪切板！", "提示");
         }

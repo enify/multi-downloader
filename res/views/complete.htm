@@ -1,1 +1,28 @@
-<h1>complete</h1>
+<style>
+    frame {
+        prototype: CompleteView url("views/complete.tis");
+        style-set: complete-view;
+    }
+</style>
+
+<frame>
+    <header>
+        <toolbar>
+            <button#add-task title="新建下载任务"><icon.icon-add /></button>
+            <br />
+            <button#delete-task title="删除任务" disabled><icon.icon-cancel /></button>
+            <button#remove-task title="彻底删除任务" disabled><icon.icon-trash /></button>
+            <button#select-all title="全选"><icon.icon-check /></button>
+            <br />
+            <button#exit-app title="退出"><icon.icon-exit /></button>
+        </toolbar>
+    </header>
+    <section>
+        <div#task-table />
+    </section>
+    <footer>
+        <p>左页脚</p>
+        <h5#errmsg></h5>
+        <p>右页脚</p>
+    </footer>
+</frame>
