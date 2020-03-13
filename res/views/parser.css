@@ -15,9 +15,10 @@
 
     li {
         margin-bottom: 8px;
-        border: 1px solid rgb(187, 187, 187);
+        border: 1px solid #ebeef5;
         border-radius: 5px;
-        background-color: rgb(241, 244, 247);
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        background-color: white;
     }
 
     li > .container {
@@ -42,7 +43,7 @@
         flow: horizontal;
         font-size: 0.9em;
         padding-top: 3px;
-        border-top: 1px solid rgb(187, 187, 187);
+        border-top: 1px solid #ebeef5;
         color: color(text-color-faded);
     }
 

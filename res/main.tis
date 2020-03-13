@@ -8,6 +8,10 @@ var EXIT_FLAG = false;  // 窗口退出标志
 
 function Init() {
     view.windowIcon = self.url("assets/img/icon.png");
+    view.trayIcon({
+        image: self.loadImage(self.url("assets/img/icon.png")),
+        text: "multi-downloader",
+    });
     utils.centerWindow();
 }
 
@@ -42,11 +46,10 @@ class MainController : Element
         this.route(e.attributes["href"]); 
     }
 
-    event toast (evt,e) { view.msgbox(#alert, JSON.stringify(evt.data)); }
+    event toast (evt,e) { $(#notify).add({title:evt.data.type, message:evt.data.msg, type:evt.data.type}); }
 
+    event exit-app { EXIT_FLAG = true; view.close() }
 }
-
-event exit-app { EXIT_FLAG = true; view.close() }
 
 event closerequest (evt) {
     if (EXIT_FLAG === true) {
@@ -67,3 +70,31 @@ event closerequest (evt) {
         }
     }
 }
+
+view << event trayicon-click (evt) {
+    if (evt.buttons == 1) {  // left mouse button
+        if (view.windowState in [View.WINDOW_SHOWN, View.WINDOW_MAXIMIZED]) {
+            view.windowState = View.WINDOW_HIDDEN;
+        } else if (view.windowState == View.WINDOW_HIDDEN) {
+            view.windowState = View.WINDOW_SHOWN;
+            view.windowTopmost = true;
+            view.windowTopmost = false;
+        } else if (view.windowState == View.WINDOW_MINIMIZED) {
+            view.windowState = View.WINDOW_SHOWN;
+        }
+
+    } else if (evt.buttons == 2) {  // right mouse button
+        var (sx,sy) = view.box(#position,#client,#screen);
+        self.popup($(menu#tray), 2, evt.x - sx, evt.y - sy);
+    }
+}
+
+event click $(menu#tray > li#show-window) {
+    if (view.windowState in [View.WINDOW_HIDDEN, View.WINDOW_MINIMIZED]) {
+        view.windowState = View.WINDOW_SHOWN;
+        view.windowTopmost = true;
+        view.windowTopmost = false;
+    }
+}
+
+event click $(menu#tray > li#exit-app) { EXIT_FLAG = true; view.close(); }

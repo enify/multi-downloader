@@ -1,0 +1,60 @@
+@set notifications {
+    :root {
+        flow: vertical;
+        display: block;
+        position: fixed;
+        right: 0;
+        bottom: 2em;
+        width: 20em;
+        z-index: 1000;
+        vertical-align: bottom;
+        overflow: hidden;
+        visibility: none;
+    }
+
+    :root:expanded {
+        visibility: visible;
+    }
+
+    li {
+        height: 0;
+        margin: 4px;
+        opacity: 0.0;
+        border: 1px solid #ebeef5;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        overflow: hidden;
+    }
+
+    li > .container {
+        margin: 5px 8px;
+    }
+
+    li header > .title {
+        font-size: 1.2em;
+    }
+
+    li header > button {
+        margin-left: *;
+        color: rgb(156, 158, 164);
+        background: transparent;
+        cursor: pointer;
+    }
+
+    li header > button:hover {
+        color: rgb(96, 98, 102);
+    }
+
+    li section {
+        margin-top: 5px;
+    }
+
+    li:expanded {
+        height: min-content;
+        opacity: 1.0;
+        transition: height(linear,1s) opacity(linear,0.5s);
+    }
+    
+    li[type=default] {  }
+}

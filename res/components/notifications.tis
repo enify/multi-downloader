@@ -1,0 +1,58 @@
+include "sciter:reactor.tis";
+
+class Notifications : Reactor.Component {
+    const styleset = ["notifications", $url(notifications.css)];
+
+    this var records = {};
+
+    function add(record) {
+        assert record.title !== #undefined;
+        assert record.message !== #undefined;
+
+        if (record.type === #undefined)
+            record.type = "default";
+        if (record.duration ===#undefined)
+            record.duration = 8s;
+        if (this.records.length == 0)
+            this.state.expanded = true;
+        
+        record._key = (new Date()).valueOf().toString();
+        record._isExpanded = false;
+        this.records[record._key] = record;
+        this.update();
+
+        (function(_this, r) {
+            _this.timer(20ms, function() {
+                _this.records[r._key]._isExpanded = true;
+                _this.update();
+            }, true);
+        })(this, record);
+        
+        (function(_this, r) {
+            _this.timer(r.duration, function() {
+                _this.records[r._key]._isExpanded = false;
+                _this.update();
+                _this.timer(1s, function() { delete _this.records[r._key]; }, true);
+            }, true);
+        })(this, record);
+    }
+
+    function render() {
+        return <div>{
+            Object.keys(this.records).map((k) => <li key={ this.records[k]._key } type={ this.records[k].type } :expanded={ this.records[k]._isExpanded }>
+                <div.container>
+                    <header>
+                        <span.title>{ this.records[k].title }</span>
+                        <button#close key={ this.records[k]._key }>X</button>
+                    </header>
+                    <section>{ this.records[k].message }</section>
+                </div>
+            </li>)
+        }</div>
+    }
+
+    event click $(button#close) (evt, e) {
+        this.records[e.attributes["key"]]._isExpanded = false;
+        this.update()
+    }
+}

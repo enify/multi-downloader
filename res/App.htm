@@ -5,6 +5,10 @@
     <title></title>
     <style src="main.css" />
     <script type="text/tiscript" src="main.tis" />
+    <menu.popup #tray>
+        <li#show-window>显示主界面</li>
+        <li#exit-app>退出</li>
+    </menu>
 </head>
 
 <body>
@@ -24,6 +28,7 @@
             </footer>
         </aside>
         <div #view></div>
+        <reactor|Notifications#notify src="components/notifications.tis" />
     </main>
 </body>
 
