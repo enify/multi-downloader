@@ -42,8 +42,15 @@ class SettingPanel : Reactor.Component {
                     <input|text.ua :value={ this.confset.user_agent } />
                 </span>
             </section>
+            <label>消息提醒：</label>
+            <section>
+                <br/>
+                <button|checkbox#notify-at-done :checked={ this.confset.notify_at_task_done }>任务完成时显示提示窗口</button>
+                <button|checkbox#notify-at-error :checked={ this.confset.notify_at_task_error }>任务错误时显示提示窗口</button>
+            </section>
             <label>代理设置：</label>
             <section>
+                <br/>
                 <button|radio value="off" :checked={ this.confset.use_proxy == "off" }>不使用</button>
                 <button|radio value="system" :checked={ this.confset.use_proxy == "system" }>使用环境代理</button>
                 <span>
@@ -75,6 +82,14 @@ class SettingPanel : Reactor.Component {
 
     event change $(input.ua) (evt,e) {
         this.confset.user_agent = e.value;
+    }
+
+    event change $(button#notify-at-done) (evt,e) {
+        this.confset.notify_at_task_done = e.value;
+    }
+
+    event change $(button##notify-at-error) (evt,e) {
+        this.confset.notify_at_task_error = e.value;
     }
 
     event change $(button[type=radio]) (evt,e) {

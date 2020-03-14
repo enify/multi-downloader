@@ -13,11 +13,13 @@ type AppConfig struct {
 	path string
 	mux  sync.Mutex
 
-	SaveDir     string `json:"save_dir"`
-	MaxRoutines int    `json:"max_routines"`
-	UseProxy    string `json:"use_proxy"` // "off":关闭，"system":环境代理，"user":自定代理
-	Proxy       string `json:"proxy"`
-	UserAgent   string `json:"user_agent"`
+	SaveDir           string `json:"save_dir"`
+	MaxRoutines       int    `json:"max_routines"`
+	UseProxy          string `json:"use_proxy"` // "off":关闭，"system":环境代理，"user":自定代理
+	Proxy             string `json:"proxy"`
+	UserAgent         string `json:"user_agent"`
+	NotifyAtTaskDone  bool   `json:"notify_at_task_done"`
+	NotifyAtTaskError bool   `json:"notify_at_task_error"`
 }
 
 // NewAppConfig 返回 AppConfig 指针对象
@@ -44,6 +46,8 @@ func (c *AppConfig) initDefaultAppConfig() {
 	c.SaveDir, _ = filepath.Abs("./Downloads")
 	c.MaxRoutines = 10
 	c.UseProxy = "off"
+	c.NotifyAtTaskDone = true
+	c.NotifyAtTaskError = true
 }
 
 // FileExist 检查配置文件是否存在

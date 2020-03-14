@@ -1,9 +1,11 @@
 package window
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 
+	mo "../model"
 	sciter "github.com/sciter-sdk/go-sciter"
 	sciterwindow "github.com/sciter-sdk/go-sciter/window"
 )
@@ -71,7 +73,16 @@ func (w *Window) Toast(mtype, msg string, v ...interface{}) {
 	w.PostEvent("toast", data)
 }
 
-// Close 通过tis端handle此事件来关闭
+// NotifyTask 任务完成时
+func (w *Window) NotifyTask(task *mo.Task) {
+	var r = sciter.NewValue()
+
+	data, _ := json.Marshal(task)
+	r.ConvertFromString(string(data), sciter.CVT_JSON_LITERAL)
+	w.PostEvent("notify-task", r)
+}
+
+// Close tis端通过handle此事件来关闭窗口
 func (w *Window) Close() {
 	w.PostEvent("exit-app", sciter.NullValue())
 }

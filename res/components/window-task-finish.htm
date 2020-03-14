@@ -1,0 +1,165 @@
+<html window-frame="transparent">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>任务完成通知</title>
+    <style>
+        @import url("../assets/css/fontello-svg.css");
+
+        html {
+            size: max-content;
+            background: transparent;
+        }
+
+        body {
+            max-width: 30em;
+            height: max-content;
+            font: system;
+            background-color: white;
+            border: 1.5px solid #ebeef5;
+            box-shadow: 0 0 10px rgba(0,0,0,.15);
+            overflow: hidden;
+            opacity: 0.0;
+            transform: translate(100%,0);
+            visibility: hidden;
+        }
+
+        body:expanded {
+            opacity: 1.0;
+            transform: translate(0,0);
+            visibility: visible;
+            transition: transform(linear,0.5s) opacity(linear,0.5s);
+        }
+
+        .container {
+            flow: vertical;
+            margin: 10px 10px;
+        }
+        
+        header .title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: rgb(85, 145, 250);
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+        }
+
+        header icon {
+            margin-right: 0.3em;
+        }
+
+        header icon.icon-ok { fill: rgb(103, 194, 58); }
+
+        header icon.icon-attention { fill: rgb(245, 108, 108); }
+
+        header .info {
+            flow: horizontal;
+            color: rgb(102, 102, 102);
+        }
+
+        header .info > li {
+            margin-right: 2em;
+        }
+
+        button#close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: rgb(156, 158, 164);
+            background: transparent;
+            cursor: pointer;
+        }
+
+        button#close:hover {
+            color: rgb(31, 135, 251);
+        }
+
+        footer {
+            text-align: right;
+        }
+
+        footer > button {
+            margin-top: 10px;
+            padding: 0px 10px;
+            margin-right: 5px;
+            background: transparent;
+            border: 1px solid rgb(187, 187, 187);
+            border-radius: 5px;
+        }
+
+        footer > button:hover {
+            color: rgb(253, 253, 253);
+            background: rgb(31, 135, 251);
+        }
+
+        footer > button:active {
+            background: rgb(3, 109, 228);
+        }
+
+    </style>
+    
+    <script type="text/tiscript">
+        include "../utils/utils.tis";
+
+        self.ready = function() {
+            var task = view.parameters;
+
+            this.$(body).content(<div>
+                <div.container>
+                    <header>
+                        <div.title>
+                            { task.status == "done" ? <icon.icon-ok /> : "" }
+                            { task.status == "error" ? <icon.icon-attention /> : "" }
+                            { task.title }
+                        </div>
+                        <div.info>
+                            <li>大小：{ utils.bytesToSize(task.file_size) }</li>
+                            <li>用时：{ utils.timeDelta(new Date(task.create_at), new Date(task.finish_at)) }</li>
+                        </div>
+                        <button#close>X</button>
+                    </header>
+                    <section>
+                        
+                    </section>
+                    <footer>
+                        { task.subtasks.length == 1 ? <button#task-file path={ task.path+"/"+task.subtasks[0].filename }>打开文件</button> : "" }
+                        <button#task-folder path={ task.path }>打开目录</button>
+                    </footer>
+                </div>
+            </div>);
+
+            this.timer(20ms, function() {
+                var (screenX1,screenY1,screenX2,screenY2) = view.screenBox(#workarea, #rect);
+                var (w,h) = $(body).box(#dimension,#margin);
+                view.move( screenX2 - w, screenY2 - h)
+                $(body).state.expanded = true;
+            });
+            this.timer(8s, function() {
+                if (! $(body).state.hover) {
+                    view.close();
+                }
+                return true;
+            }, true);
+        }
+
+        event click $(button#close) {
+            $(body).state.expanded = false;
+        }
+
+        event click $(button#task-file) (evt,e) {
+            Sciter.launch(e.attributes["path"]);
+        }
+
+        event click $(button#task-folder) (evt,e) {
+            Sciter.launch(e.attributes["path"]);
+        }
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>

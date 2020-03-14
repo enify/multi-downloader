@@ -16,4 +16,14 @@ namespace utils {
 
         return ((bytes / Math.pow(k, i) *100).toInteger() / 100.0).toString() + " " + sizes[i];
     }
+
+    function timeDelta(sDate, eDate) {
+        var ts = Date.diff(sDate, eDate, #seconds);
+        var s = ts % 60;
+        var m = ts / 60;
+        var h = m / 60;
+        m = m % 60;
+
+        return String.printf("%02d:%02d:%02d", h, m, s);
+    }
 }

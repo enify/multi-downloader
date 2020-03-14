@@ -48,6 +48,15 @@ class MainController : Element
 
     event toast (evt,e) { $(#notify).add({title:evt.data.type, message:evt.data.msg, type:evt.data.type}); }
 
+    event notify-task (evt,e) {
+        View.window({
+            type: View.POPUP_WINDOW,
+            caption: "notify",
+            url:self.url("components/window-task-finish.htm"),
+            parameters: evt.data,
+        }); 
+    }
+
     event exit-app { EXIT_FLAG = true; view.close() }
 }
 

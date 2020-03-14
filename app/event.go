@@ -28,6 +28,11 @@ func initEventHandlers(app *App) {
 	taskDoneEventWrap := func(wraped func(task *mo.Task) error) func(task *mo.Task) error {
 		return func(task *mo.Task) error {
 			app.lg.Info("taskDone: id:%s, title:%s", task.ID, task.Title)
+			if task.Status == mo.StatusDone && app.conf.NotifyAtTaskDone {
+				w.NotifyTask(task)
+			} else if task.Status == mo.StatusError && app.conf.NotifyAtTaskError {
+				w.NotifyTask(task)
+			}
 			return wraped(task)
 		}
 	}
