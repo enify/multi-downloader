@@ -1,6 +1,8 @@
 package app
 
 import (
+	"errors"
+
 	mo "./model"
 	"./parser"
 	"./request"
@@ -68,6 +70,7 @@ func (app *App) Init() {
 	initWindow(app)
 	initHTTPClient(app)
 	initParsers(app)
+	initTaskStatus(app.ts)
 
 	initExportedFunctions(app)
 	initEventHandlers(app)
@@ -111,6 +114,24 @@ func initParsers(app *App) {
 		meta := pr.GetMeta()
 		app.parsers[meta.InternalName] = pr
 		app.lg.Info("register parser: name:%s, internal name:%s, version:%s", meta.Name, meta.InternalName, meta.Version)
+	}
+}
+
+// reset task status when app restart
+func initTaskStatus(ts *mo.TaskStorage) {
+	for _, task := range ts.Tasks {
+		if task.Status == mo.StatusPending {
+			task.Status = mo.StatusError
+			task.Err = errors.New("app restarted")
+		} else if task.Status == mo.StatusRunning {
+			task.Status = mo.StatusPause
+			for _, subtask := range task.SubTasks {
+				if subtask.Status == mo.StatusRunning {
+					subtask.Status = mo.StatusPending
+				}
+			}
+		}
+		ts.Save()
 	}
 }
 

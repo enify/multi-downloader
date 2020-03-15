@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -83,6 +84,7 @@ func (w *TaskDownloadWork) Do() (err error) {
 	} else if count[mo.StatusError] > 0 && count[mo.StatusError]+count[mo.StatusDone] == len(w.Task.SubTasks) {
 		w.Task.FinishAt = time.Now()
 		w.Task.Status = mo.StatusError
+		w.Task.Err = errors.New("some subtask faild")
 	}
 
 	if w.AtSubTaskDone != nil {

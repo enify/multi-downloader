@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -85,6 +86,7 @@ func initEventHandlers(app *App) {
 		err := pr.Prepare(task, app.httpclient)
 		if err != nil {
 			task.Status = mo.StatusError
+			task.Err = fmt.Errorf("parseTask: %w", err)
 			w.Toast("warn", "任务:%s 解析失败!解析器:%s E:%s", task.URL, pr.GetMeta().Name, err)
 			app.lg.Warn("parseTask: id:%s, parser:%s E:%s", task.ID, pr.GetMeta().InternalName, err)
 		} else {
@@ -137,9 +139,11 @@ func initEventHandlers(app *App) {
 					task.Meta = map[string]string{}
 					task.FinishAt = time.Time{}
 					task.SubTasks = []*mo.SubTask{}
+					task.Err = nil
 					err := pr.Prepare(task, app.httpclient)
 					if err != nil {
 						task.Status = mo.StatusError
+						task.Err = fmt.Errorf("parseTask: %w", err)
 						w.Toast("warn", "任务:%s 再解析失败!解析器:%s E:%s", task.URL, pr.GetMeta().Name, err)
 						app.lg.Warn("parseTask: re parse id:%s, parser:%s, E:%s", task.ID, pr.GetMeta().InternalName, err)
 					} else {

@@ -76,7 +76,8 @@
                     <li>解析器名：  { task.parser_name }</li>
                     <li>创建时间：  { (new Date(task.create_at)).toString("%Y-%m-%d %H:%M:%S") }</li>
                     <li>完成时间：  { (new Date(task.finish_at)).toString("%Y-%m-%d %H:%M:%S") }</li>
-                    <li>总计用时：{ utils.timeDelta(new Date(task.create_at), new Date(task.finish_at)) }</li>
+                    <li>总计用时：  { utils.timeDelta(new Date(task.create_at), new Date(task.finish_at)) }</li>
+                    <li>任务链接：  <a.link href={ task.url }>link</a></li>
 
                 </div>
                 <h4.header>子任务</h4>
@@ -116,7 +117,7 @@
             return true;
         }
 
-        event click $(.detail a.link) (evt,e) {
+        event click $(a.link) (evt,e) {
             view.clipboard(#put, e.attributes["href"]);
             view.msgbox(#information, "已复制到剪切板！", "提示");
         }
