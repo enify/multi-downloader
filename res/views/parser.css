@@ -67,5 +67,6 @@
 
     li footer icon:hover {
         fill: morph(color(icon-color-actived), darken: 10%);
+        cursor: pointer;
     }
 }

@@ -18,7 +18,7 @@ class ParserView : Element {
                         <div>内部名：{ pr.internal_name }</div>
                         <div>
                             作者：{ pr.autor == "" ? "--" : pr.autor } 
-                            <a href={ pr.link } class={ pr.link == "" ? "hidden" : "visible" }><icon.icon-link /></a>
+                            <a link={ pr.link } class={ pr.link == "" ? "hidden" : "visible" }><icon.icon-link /></a>
                         </div>
                     </footer>
                 </div>
@@ -27,7 +27,7 @@ class ParserView : Element {
     }
 
     event click $(li footer a) (evt,e) {
-        Sciter.launch(e.attributes["href"]);
+        Sciter.launch(e.attributes["link"]);
         return true;
     }
 }
