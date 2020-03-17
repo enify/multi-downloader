@@ -3,7 +3,6 @@ package window
 import (
 	"encoding/json"
 	"fmt"
-	"path/filepath"
 
 	mo "../model"
 	sciter "github.com/sciter-sdk/go-sciter"
@@ -18,27 +17,26 @@ type Window struct {
 }
 
 // New create a new window
-func New(title, mainpage string) (window *Window, err error) {
+func New() (window *Window, err error) {
 	w, err := sciterwindow.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
 	if err != nil {
 		return
 	}
-
-	fp, _ := filepath.Abs(mainpage)
-	err = w.LoadFile(fp)
-	if err != nil {
-		return
-	}
-
-	w.SetTitle(title)
 	window = &Window{map[string][]func(args ...*sciter.Value){}, w}
 
 	return
 }
 
 // Init window
-func (w *Window) Init() {
+func (w *Window) Init(title, mainpage string) (err error) {
+	err = w.LoadFile(mainpage)
+	if err != nil {
+		return
+	}
+	w.SetTitle(title)
+
 	w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL|sciter.ALLOW_FILE_IO|sciter.ALLOW_SYSINFO)
+	return
 }
 
 // InitDebugOptions 调试模式下的设置

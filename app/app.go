@@ -8,6 +8,8 @@ import (
 	"./request"
 	"./window"
 	"./worker"
+	"github.com/GeertJohan/go.rice"
+	ricepack "github.com/sciter-sdk/go-sciter/rice"
 )
 
 // App 应用主struct
@@ -41,7 +43,7 @@ func New(meta *mo.AppMeta) (app *App, err error) {
 
 	wp := worker.NewPool(conf.MaxRoutines, 10)
 
-	win, err := window.New(meta.AppName, meta.MainPage)
+	win, err := window.New()
 	if err != nil {
 		return
 	}
@@ -78,6 +80,7 @@ func (app *App) Init() {
 	if app.meta.IsDebug {
 		app.meta.LogLevel = "DEBUG"
 		app.window.InitDebugOptions()
+		rice.Debug = true
 	}
 }
 
@@ -92,7 +95,11 @@ func initWorkerPool(app *App) {
 
 func initWindow(app *App) {
 	app.lg.Info("init window")
-	app.window.Init()
+	ricepack.HandleDataLoad(app.window.Sciter)
+	err := app.window.Init(app.meta.AppName, app.meta.MainPage)
+	if err != nil {
+		app.lg.Error("init window: E:%s", err)
+	}
 }
 
 func initHTTPClient(app *App) {
