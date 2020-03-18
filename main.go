@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"./app"
@@ -51,4 +52,8 @@ func main() {
 	}()
 
 	svr.Run()
+}
+
+func init() {
+	runtime.LockOSThread()
 }
