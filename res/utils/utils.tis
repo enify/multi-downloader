@@ -7,6 +7,7 @@ namespace utils {
     }
 
     function bytesToSize(bytes) {
+        if (bytes < 0) return "--";
         if (bytes === 0) return "0 Bytes";
 
         const k = 1024;

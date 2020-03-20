@@ -223,6 +223,7 @@ func initEventHandlers(app *App) {
 					for _, subtask := range task.SubTasks {
 						os.Remove(filepath.Join(task.Path, subtask.FileName))
 					}
+					os.Remove(task.Preview)
 					os.Remove(task.Path)
 				}
 				app.lg.Info("removeTask: id:%s", task.ID)

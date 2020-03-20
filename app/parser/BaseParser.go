@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"regexp"
 
 	mo "../model"
 	"../request"
@@ -32,12 +33,12 @@ func (parser BaseParser) GetMeta() Meta {
 func (parser BaseParser) Prepare(task *mo.Task, client *request.HTTPClient) (err error) {
 	resp, err := client.Req("HEAD", task.URL, nil, "", nil)
 	if err != nil {
-		return fmt.Errorf("request task url, E:%w", err)
+		return fmt.Errorf("request task url: E:%w", err)
 	}
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("request task url, E:status:%s", resp.Status)
+		return fmt.Errorf("request task url: E:status:%s", resp.Status)
 	}
 
 	filename, err := request.FilenameFromResponse(resp)
@@ -51,7 +52,9 @@ func (parser BaseParser) Prepare(task *mo.Task, client *request.HTTPClient) (err
 
 	task.Title = filename
 	task.FileSize = resp.ContentLength
-	task.Preview = ""
+	if exp := regexp.MustCompile(`.+(.jpg|.jpeg|.png|.bmp|.gif)$`); exp.MatchString(filename) {
+		task.Preview = filepath.Join(task.Path, filename)
+	}
 
 	subtask := &mo.SubTask{
 		FileName: task.Title,

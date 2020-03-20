@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -136,9 +137,91 @@ func (ts *TaskStorage) HasTask(url string) bool {
 	return false
 }
 
+// MarshalJSON user defined Task marshal method
+func (t *Task) MarshalJSON() ([]byte, error) {
+	type Alias Task
+	var errToStr = func(err error) string {
+		if err != nil {
+			return fmt.Sprintf("%s", err)
+		}
+		return ""
+	}
+	return json.Marshal(&struct {
+		*Alias
+		Err string `json:"error"`
+	}{
+		Alias: (*Alias)(t),
+		Err:   errToStr(t.Err),
+	})
+}
+
+// UnmarshalJSON user defined Task unmarshal method
+func (t *Task) UnmarshalJSON(data []byte) error {
+	type Alias Task
+	tmp := &struct {
+		*Alias
+		Err string `json:"error"`
+	}{
+		Alias: (*Alias)(t),
+	}
+
+	err := json.Unmarshal(data, tmp)
+	if err != nil {
+		return err
+	}
+
+	if tmp.Err != "" {
+		t.Err = fmt.Errorf(tmp.Err)
+	} else {
+		t.Err = nil
+	}
+	return nil
+}
+
 // AddSubTask add subtask to task
 func (t *Task) AddSubTask(st *SubTask) {
 	t.mux.Lock()
 	defer t.mux.Unlock()
 	t.SubTasks = append(t.SubTasks, st)
+}
+
+// MarshalJSON user defined SubTask marshal method
+func (t *SubTask) MarshalJSON() ([]byte, error) {
+	type Alias SubTask
+	var errToStr = func(err error) string {
+		if err != nil {
+			return fmt.Sprintf("%s", err)
+		}
+		return ""
+	}
+	return json.Marshal(&struct {
+		*Alias
+		Err string `json:"error"`
+	}{
+		Alias: (*Alias)(t),
+		Err:   errToStr(t.Err),
+	})
+}
+
+// UnmarshalJSON user defined SubTask unmarshal method
+func (t *SubTask) UnmarshalJSON(data []byte) error {
+	type Alias SubTask
+	tmp := &struct {
+		*Alias
+		Err string `json:"error"`
+	}{
+		Alias: (*Alias)(t),
+	}
+
+	err := json.Unmarshal(data, tmp)
+	if err != nil {
+		return err
+	}
+
+	if tmp.Err != "" {
+		t.Err = fmt.Errorf(tmp.Err)
+	} else {
+		t.Err = nil
+	}
+	return nil
 }

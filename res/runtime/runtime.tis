@@ -8,7 +8,12 @@ namespace runtime {
     }
 
     property apptasks(v) {
-        get { return view.getTasks(); }
+        get {
+            var r = [];
+            try { r = view.getTasks(); }
+            catch(e) { stderr.printf("call runtime func: E:%s", e); }
+            return r;
+        }
     }
 
     property appparsers(v) {
