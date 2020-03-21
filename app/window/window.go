@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	mo "../model"
+	mo "github.com/enify/multi-downloader/app/model"
 	sciter "github.com/sciter-sdk/go-sciter"
 	sciterwindow "github.com/sciter-sdk/go-sciter/window"
 )

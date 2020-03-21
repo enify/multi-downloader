@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	mo "./model"
-	"./parser"
-	"./worker"
+	mo "github.com/enify/multi-downloader/app/model"
+	"github.com/enify/multi-downloader/app/parser"
+	"github.com/enify/multi-downloader/app/worker"
 	"github.com/sciter-sdk/go-sciter"
 )
 

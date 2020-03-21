@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 
-	"./parser"
+	"github.com/enify/multi-downloader/app/parser"
 	sciter "github.com/sciter-sdk/go-sciter"
 )
 

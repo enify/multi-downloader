@@ -7,8 +7,8 @@ import (
 	"runtime"
 	"syscall"
 
-	"./app"
-	"./app/model"
+	"github.com/enify/multi-downloader/app"
+	"github.com/enify/multi-downloader/app/model"
 	rice "github.com/GeertJohan/go.rice"
 )
 

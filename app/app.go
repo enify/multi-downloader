@@ -3,11 +3,11 @@ package app
 import (
 	"errors"
 
-	mo "./model"
-	"./parser"
-	"./request"
-	"./window"
-	"./worker"
+	mo "github.com/enify/multi-downloader/app/model"
+	"github.com/enify/multi-downloader/app/parser"
+	"github.com/enify/multi-downloader/app/request"
+	"github.com/enify/multi-downloader/app/window"
+	"github.com/enify/multi-downloader/app/worker"
 	"github.com/GeertJohan/go.rice"
 	ricepack "github.com/sciter-sdk/go-sciter/rice"
 )

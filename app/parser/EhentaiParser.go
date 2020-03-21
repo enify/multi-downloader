@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	mo "../model"
-	"../request"
-	"../util"
+	mo "github.com/enify/multi-downloader/app/model"
+	"github.com/enify/multi-downloader/app/request"
+	"github.com/enify/multi-downloader/app/util"
 	"github.com/PuerkitoBio/goquery"
 )
 

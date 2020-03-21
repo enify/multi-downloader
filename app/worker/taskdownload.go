@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
-	mo "../model"
-	"../request"
+	mo "github.com/enify/multi-downloader/app/model"
+	"github.com/enify/multi-downloader/app/request"
 )
 
 // TaskDownloadWork subtask download Work type

@@ -3,8 +3,8 @@ package parser
 import (
 	"sort"
 
-	mo "../model"
-	"../request"
+	mo "github.com/enify/multi-downloader/app/model"
+	"github.com/enify/multi-downloader/app/request"
 )
 
 var (
