@@ -41,6 +41,7 @@
     }
 
     footer {
+        visibility: none;
         flow: horizontal;
         height: 30px;
         background-color: green;

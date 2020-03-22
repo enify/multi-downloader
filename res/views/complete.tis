@@ -27,7 +27,6 @@ class CompleteView : Element {
         </VTable>);
         this.timer(2s, function() {
             this.tasktable.update({ recordset: preProcess(runtime.apptasks) });
-            this.$(#errmsg).text = (new Date()).toLocaleString(#time);
             return true;
         });
     }
