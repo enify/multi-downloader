@@ -20,4 +20,4 @@
 Config.json
 TaskStorage.json
 Downloads/
-main.syso
+build/output/
