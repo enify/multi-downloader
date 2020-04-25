@@ -3,12 +3,12 @@ package app
 import (
 	"errors"
 
+	rice "github.com/GeertJohan/go.rice"
 	mo "github.com/enify/multi-downloader/app/model"
 	"github.com/enify/multi-downloader/app/parser"
 	"github.com/enify/multi-downloader/app/request"
 	"github.com/enify/multi-downloader/app/window"
 	"github.com/enify/multi-downloader/app/worker"
-	"github.com/GeertJohan/go.rice"
 	ricepack "github.com/sciter-sdk/go-sciter/rice"
 )
 
@@ -69,16 +69,17 @@ func (app *App) Init() {
 	app.lg.Info("init app")
 
 	initWorkerPool(app)
-	initWindow(app)
 	initHTTPClient(app)
 	initParsers(app)
 	initTaskStatus(app.ts)
 
 	initExportedFunctions(app)
 	initEventHandlers(app)
+	initWindow(app)
 
 	if app.meta.IsDebug {
 		app.meta.LogLevel = "DEBUG"
+		app.lg.SetLevel(DEBUG)
 		app.window.InitDebugOptions()
 		rice.Debug = true
 	}
@@ -91,15 +92,6 @@ func initWorkerPool(app *App) {
 			app.lg.Error("worker: %s", err)
 		}
 	}()
-}
-
-func initWindow(app *App) {
-	app.lg.Info("init window")
-	ricepack.HandleDataLoad(app.window.Sciter)
-	err := app.window.Init(app.meta.AppName, app.meta.MainPage)
-	if err != nil {
-		app.lg.Error("init window: E:%s", err)
-	}
 }
 
 func initHTTPClient(app *App) {
@@ -139,6 +131,15 @@ func initTaskStatus(ts *mo.TaskStorage) {
 			}
 		}
 		ts.Save()
+	}
+}
+
+func initWindow(app *App) {
+	app.lg.Info("init window")
+	ricepack.HandleDataLoad(app.window.Sciter)
+	err := app.window.Init(app.meta.AppName, app.meta.MainPage)
+	if err != nil {
+		app.lg.Error("init window: E:%s", err)
 	}
 }
 

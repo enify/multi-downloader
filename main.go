@@ -7,27 +7,32 @@ import (
 	"runtime"
 	"syscall"
 
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/enify/multi-downloader/app"
 	"github.com/enify/multi-downloader/app/model"
-	rice "github.com/GeertJohan/go.rice"
 )
 
+// will be inject at building
 var (
-	meta = &model.AppMeta{
-		AppName:         "multi-Downloader",
-		Version:         "0.0.1",
-		Description:     "多功能下载器项目，可通过解析器来适配更多网站支持",
-		MainPage:        "rice://res/App.htm",
-		ConfigPath:      "./Config.json",
-		TaskStoragePath: "./TaskStorage.json",
-		LogPath:         "./app.log",
-		LogLevel:        "DEBUG",
-		IsDebug:         true,
-	}
+	AppName = "Debug Mode"
+	AppVer  = "0.0.0"
+	AppDesc = "你正处于debug模式"
 )
 
 func main() {
 	rice.MustFindBox("res")
+
+	meta := &model.AppMeta{
+		AppName:         AppName,
+		Version:         AppVer,
+		Description:     AppDesc,
+		MainPage:        "rice://res/App.htm",
+		ConfigPath:      "./Config.json",
+		TaskStoragePath: "./TaskStorage.json",
+		LogPath:         "./app.log",
+		LogLevel:        "INFO",
+		IsDebug:         AppVer == "0.0.0",
+	}
 
 	svr, err := app.New(meta)
 	if err != nil {

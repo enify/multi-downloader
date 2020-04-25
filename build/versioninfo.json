@@ -1,0 +1,43 @@
+{
+    "IconPath": "./icon.ico",
+    "ManifestPath": "./app.manifest",
+    "StringFileInfo": {
+        "ProductName": "multi-downloader",
+        "ProductVersion": "0.0.1",
+        "FileVersion": "0.0.1",
+        "FileDescription": "多功能下载器，可通过解析器来适配更多网站支持",
+        "CompanyName": "enify",
+        "LegalCopyright": "© 2020 enify",
+        "Comments": "",
+        "InternalName": "",
+        "OriginalFilename": "",
+        "LegalTrademarks": "",
+        "PrivateBuild": "",
+        "SpecialBuild": ""
+    },
+    "FixedFileInfo": {
+        "FileVersion": {
+            "Major": 0,
+            "Minor": 0,
+            "Patch": 1,
+            "Build": 0
+        },
+        "ProductVersion": {
+            "Major": 0,
+            "Minor": 0,
+            "Patch": 1,
+            "Build": 0
+        },
+        "FileFlagsMask": "3f",
+        "FileFlags ": "00",
+        "FileOS": "040004",
+        "FileType": "01",
+        "FileSubType": "00"
+    },
+    "VarFileInfo": {
+        "Translation": {
+            "LangID": "0409",
+            "CharsetID": "04B0"
+        }
+    }
+}

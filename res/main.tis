@@ -6,17 +6,17 @@ include "utils/utils.tis";
 
 var EXIT_FLAG = false;  // 窗口退出标志
 
-function Init() {
+
+self.ready = function() {
+    var meta = runtime.appmeta;
+
+    $(aside .title).text = meta.appname;
     view.windowIcon = self.url("assets/img/icon.png");
     view.trayIcon({
         image: self.loadImage(self.url("assets/img/icon.png")),
-        text: "multi-downloader",
+        text: meta.appname,
     });
     utils.centerWindow();
-}
-
-self.ready = function() {
-    Init();
 }
 
 class MainController : Element

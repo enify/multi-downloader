@@ -51,6 +51,11 @@ func NewLogger(level, path string) (lg *Logger, err error) {
 	return
 }
 
+// SetLevel set logger output level
+func (lg *Logger) SetLevel(v LogLevel) {
+	lg.level = v
+}
+
 // Debug log a message with severity "DEBUG"
 func (lg *Logger) Debug(format string, v ...interface{}) {
 	if lg.level <= DEBUG {

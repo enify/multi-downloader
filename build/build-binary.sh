@@ -15,21 +15,34 @@ Build() {
     if [ $GOOS = "windows" ]; then
         suffix=".exe"
         ldflags="-s -w -H=windowsgui"
+        (cd ./build && goversioninfo -64 -o ../main.syso ./versioninfo.json)
     fi
 
-    filename=${APP_NAME}-v${APP_VER}-${GOOS}-${GOARCH}${suffix}
-    filepath=${TMP_OUTPUT}/${filename}
+    out=${APP_NAME}-v${APP_VER}-${GOOS}-${GOARCH}
+    outpath=${TMP_OUTPUT}/${out}
+    filepath=${outpath}/${APP_NAME}${suffix}
 
-    echo Building $filename
+    echo "Building $out"
     mkdir -p $TMP_OUTPUT
 
-    echo build executable...
-    go build -o $filepath -trimpath -ldflags="${ldflags}" .
+    echo "build executable..."
+    go build -o $filepath -trimpath -ldflags="-X main.AppName=${APP_NAME} -X main.AppVer=${APP_VER} -X main.AppDesc=${APP_DESC} ${ldflags}" .
 
-    echo rice pack...
+    echo "rice pack..."
     rice -i ./ append --exec $filepath
 
-    echo Done
+    echo "copy dynamic library..."
+    if [ $GOOS = "windows" -a $GOARCH = "amd64" ]; then
+        cp ./build/resource/sciter.dll $outpath
+    elif [ $GOOS = "linux" -a $GOARCH = "amd64" ]; then
+        cp ./build/resource/libsciter-gtk.so $outpath
+    fi
+
+    echo "zip..."
+    mkdir -p $OUTPUT
+    (cd $TMP_OUTPUT && zip -q -r "${OUTPUT}/${out}.zip" ./$out)
+
+    echo "Done"
 }
 
 
@@ -41,6 +54,4 @@ Build windows amd64
 export CC=gcc
 Build linux amd64
 
-mkdir -p $OUTPUT
-mv -v $TMP_OUTPUT/* $OUTPUT
-echo All Done
+echo "All Done"

@@ -17,6 +17,7 @@
 # project
 .history/
 *.log
+*.syso
 Config.json
 TaskStorage.json
 Downloads/
