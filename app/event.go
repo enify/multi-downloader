@@ -120,7 +120,7 @@ func initEventHandlers(app *App) {
 			if task != nil {
 				pr := app.parsers[task.ParserName]
 				if task.Status == mo.StatusPause {
-					app.lg.Info("startTask: type:paused, id:%s, do: re submut subtask", task.ID)
+					app.lg.Info("startTask: type:paused, id:%s, do: re submit subtask", task.ID)
 					task.Status = mo.StatusRunning
 					for _, subtask := range task.SubTasks {
 						app.wp.Submit(&worker.TaskDownloadWork{

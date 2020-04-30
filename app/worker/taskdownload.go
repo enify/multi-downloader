@@ -11,6 +11,7 @@ import (
 
 	mo "github.com/enify/multi-downloader/app/model"
 	"github.com/enify/multi-downloader/app/request"
+	"github.com/enify/multi-downloader/app/util"
 )
 
 // TaskDownloadWork subtask download Work type
@@ -34,45 +35,50 @@ func (w *TaskDownloadWork) Do() (err error) {
 	}
 
 	w.SubTask.Status = mo.StatusRunning
-	err = func() error {
-		err := os.MkdirAll(w.Task.Path, 0755)
-		if err != nil {
-			return fmt.Errorf("createTaskPath: path:%s, E:%s", w.Task.Path, err)
-		}
-
-		w.Client.SetTimeout(10 * time.Minute)
-
-		resp, err := w.Client.Req("GET", w.SubTask.URL, nil, "", nil)
-		if err != nil {
-			return fmt.Errorf("requestTaskUrl: url:%s, E:%s", w.SubTask.URL, err)
-		}
-
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("requestTaskUrl: url:%s, E:status:%s", w.SubTask.URL, resp.Status)
-		}
-
-		filePath := filepath.Join(w.Task.Path, w.SubTask.FileName)
-		f, err := os.Create(filePath)
-		if err != nil {
-			return fmt.Errorf("createTaskFile: path:%s, E:%s", filePath, err)
-		}
-
-		defer f.Close()
-		_, err = io.Copy(f, resp.Body)
-		if err != nil {
-			return fmt.Errorf("writeTaskFile: path:%s, E:%s", filePath, err)
-		}
-
-		return nil
-	}()
-
-	if err != nil {
-		w.SubTask.Status = mo.StatusError
+	if util.IsFileExist(filepath.Join(w.Task.Path, w.SubTask.FileName)) {
+		w.SubTask.Status = mo.StatusDone // (重新)下载时跳过已完成的文件
+		w.SubTask.Err = nil
 	} else {
-		w.SubTask.Status = mo.StatusDone
+		err = func() error {
+			err := os.MkdirAll(w.Task.Path, 0755)
+			if err != nil {
+				return fmt.Errorf("createTaskPath: path:%s, E:%s", w.Task.Path, err)
+			}
+
+			w.Client.SetTimeout(10 * time.Minute)
+
+			resp, err := w.Client.Req("GET", w.SubTask.URL, nil, "", nil)
+			if err != nil {
+				return fmt.Errorf("requestTaskUrl: url:%s, E:%s", w.SubTask.URL, err)
+			}
+
+			defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				return fmt.Errorf("requestTaskUrl: url:%s, E:status:%s", w.SubTask.URL, resp.Status)
+			}
+
+			filePath := filepath.Join(w.Task.Path, w.SubTask.FileName)
+			f, err := os.Create(filePath)
+			if err != nil {
+				return fmt.Errorf("createTaskFile: path:%s, E:%s", filePath, err)
+			}
+
+			defer f.Close()
+			_, err = io.Copy(f, resp.Body)
+			if err != nil {
+				return fmt.Errorf("writeTaskFile: path:%s, E:%s", filePath, err)
+			}
+
+			return nil
+		}()
+
+		if err != nil {
+			w.SubTask.Status = mo.StatusError
+		} else {
+			w.SubTask.Status = mo.StatusDone
+		}
+		w.SubTask.Err = err
 	}
-	w.SubTask.Err = err
 
 	var count = map[mo.TaskStatus]int{}
 	for _, t := range w.Task.SubTasks {
