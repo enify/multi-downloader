@@ -141,26 +141,51 @@ func (ts *TaskStorage) HasTask(url string) bool {
 func (t *Task) MarshalJSON() ([]byte, error) {
 	type Alias Task
 	var errToStr = func(err error) string {
-		if err != nil {
-			return fmt.Sprintf("%s", err)
+		if err == nil {
+			return ""
 		}
-		return ""
+		return fmt.Sprintf("%s", err)
+	}
+	var timeToStr = func(ti time.Time) string {
+		if ti.IsZero() {
+			return ""
+		}
+		return ti.Format(time.RFC3339)
 	}
 	return json.Marshal(&struct {
 		*Alias
-		Err string `json:"error"`
+		Err      string `json:"error"`
+		CreateAt string `json:"create_at"`
+		FinishAt string `json:"finish_at"`
 	}{
-		Alias: (*Alias)(t),
-		Err:   errToStr(t.Err),
+		Alias:    (*Alias)(t),
+		Err:      errToStr(t.Err),
+		CreateAt: timeToStr(t.CreateAt),
+		FinishAt: timeToStr(t.FinishAt),
 	})
 }
 
 // UnmarshalJSON user defined Task unmarshal method
 func (t *Task) UnmarshalJSON(data []byte) error {
 	type Alias Task
+	var strToErr = func(s string) error {
+		if s == "" {
+			return nil
+		}
+		return fmt.Errorf(s)
+	}
+	var strToTime = func(s string) time.Time {
+		if s == "" {
+			return time.Time{}
+		}
+		t, _ := time.Parse(time.RFC3339, s)
+		return t
+	}
 	tmp := &struct {
 		*Alias
-		Err string `json:"error"`
+		Err      string `json:"error"`
+		CreateAt string `json:"create_at"`
+		FinishAt string `json:"finish_at"`
 	}{
 		Alias: (*Alias)(t),
 	}
@@ -170,11 +195,9 @@ func (t *Task) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if tmp.Err != "" {
-		t.Err = fmt.Errorf(tmp.Err)
-	} else {
-		t.Err = nil
-	}
+	t.Err = strToErr(tmp.Err)
+	t.CreateAt = strToTime(tmp.CreateAt)
+	t.FinishAt = strToTime(tmp.FinishAt)
 	return nil
 }
 
@@ -189,10 +212,10 @@ func (t *Task) AddSubTask(st *SubTask) {
 func (t *SubTask) MarshalJSON() ([]byte, error) {
 	type Alias SubTask
 	var errToStr = func(err error) string {
-		if err != nil {
-			return fmt.Sprintf("%s", err)
+		if err == nil {
+			return ""
 		}
-		return ""
+		return fmt.Sprintf("%s", err)
 	}
 	return json.Marshal(&struct {
 		*Alias
@@ -206,6 +229,12 @@ func (t *SubTask) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON user defined SubTask unmarshal method
 func (t *SubTask) UnmarshalJSON(data []byte) error {
 	type Alias SubTask
+	var strToErr = func(s string) error {
+		if s == "" {
+			return nil
+		}
+		return fmt.Errorf(s)
+	}
 	tmp := &struct {
 		*Alias
 		Err string `json:"error"`
@@ -218,10 +247,6 @@ func (t *SubTask) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if tmp.Err != "" {
-		t.Err = fmt.Errorf(tmp.Err)
-	} else {
-		t.Err = nil
-	}
+	t.Err = strToErr(tmp.Err)
 	return nil
 }
