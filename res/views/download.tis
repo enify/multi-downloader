@@ -17,7 +17,7 @@ class DownloadView : Element {
                                 :checked={ this.isSelected(record) }>
                                 <td.title title={ record.title }>{ record.title }</td>
                                 <td.progress>
-                                    <progress.bar max="100" value={ record._progressBarValue } />
+                                    <progress.bar max="100" :value={ record._progressBarValue } />
                                     <small.text>{ record._progressText }</small>
                                 </td>
                                 <td.status>
