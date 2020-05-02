@@ -57,6 +57,17 @@
             cursor: pointer;
         }
 
+        popup[role="tooltip"] {
+            max-width: 20em;
+            background-color: rgb(242, 248, 249);
+            word-wrap: normal;
+            word-break: break-all;
+        }
+
+        popup[role="overflow-tooltip"] {
+            background-color: rgb(242, 248, 249);
+        }
+
     </style>
     
     <script type="text/tiscript">
@@ -94,7 +105,7 @@
                         task.subtasks.map((subtask, index) => <tr>
                             <td>{ index+1 }</td>
                             <td>{ subtask.filename }</td>
-                            <td>{ subtask.status == "error" ? <span style="color:red;">{ subtask.error }</span> : subtask.status }</td>
+                            <td>{ subtask.status == "error" ? <span style="color:red;" tooltip={ subtask.error }>error</span> : subtask.status }</td>
                             <td>
                                 <a.link href={ subtask.url }>link</a>
                             </td>
