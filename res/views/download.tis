@@ -2,6 +2,16 @@ class DownloadView : Element {
     this var tasktable;
 
     function attached() {
+        var taskstatus = {};
+
+        function statusChanged(task) {
+            if (task.status !== taskstatus[task.id]) {
+                taskstatus[task.id] = task.status;
+                return true;
+            }
+            return false;
+        }
+
         this.$(#task-table).content(<VTable multiselect sortable recordset={ this.preProcess(runtime.apptasks) } @{ this.tasktable }>
                 <columns>
                     <th>标题</th>
@@ -33,7 +43,13 @@ class DownloadView : Element {
             </VTable>);
         
         this.timer(2s, function() {
-            this.tasktable.update({ recordset: preProcess(runtime.apptasks) });
+            var tasks = runtime.apptasks;
+
+            this.tasktable.update({ recordset: preProcess(tasks) });
+            if (tasks.filter(statusChanged).length > 0) {
+                this.postEvent("taskstatus-changed");
+            }
+            
             return true;
         });
     }
@@ -74,16 +90,11 @@ class DownloadView : Element {
     }
 
     function setToolbarState(vtable) {
-        var records = [];
         var count = {"pending":0, "running":0, "pause":0, "done":0, "error":0};
 
-        if (vtable.selectedRecords.length > 0) {
-            for (var k in Object.keys(vtable.selectedRecords)) {
-                records.push(vtable.selectedRecords[k]);
-            }
-        } else if (vtable.currentRecord != null) {
-            records.push(vtable.currentRecord);
-        }
+        var ids = getOptTasks(vtable)
+        var records = vtable.recordset.filter(:r:r.id in ids)
+
         for (var r in records) {
             if (r.status in count) {
                 count[r.status] ++
@@ -98,6 +109,7 @@ class DownloadView : Element {
     event mouseup $(#task-table tbody > tr) { setToolbarState(this.tasktable); }
     event keyup $(#task-table tbody) { setToolbarState(this.tasktable); }
     event click $(button#select-all) { setToolbarState(this.tasktable); }
+    event taskstatus-changed { setToolbarState(this.tasktable); }
 
     event click $(button#add-task) {
         var filters = runtime.urlfilters;
