@@ -71,14 +71,15 @@ func initEventHandlers(app *App) {
 		}
 
 		var task = &mo.Task{
-			ID:         strconv.FormatInt(time.Now().UnixNano()/1e6, 10),
-			URL:        url,
-			Status:     mo.StatusPending,
-			Path:       app.conf.SaveDir,
-			Meta:       map[string]string{},
-			CreateAt:   time.Now(),
-			ParserName: pr.GetMeta().InternalName,
-			SubTasks:   []*mo.SubTask{},
+			ID:            strconv.FormatInt(time.Now().UnixNano()/1e6, 10),
+			URL:           url,
+			Status:        mo.StatusPending,
+			Path:          app.conf.SaveDir,
+			Meta:          map[string]string{},
+			CreateAt:      time.Now(),
+			ParserName:    pr.GetMeta().InternalName,
+			ExternalFiles: []string{},
+			SubTasks:      []*mo.SubTask{},
 		}
 		app.ts.AddTask(task)
 		app.lg.Info("AddTask: id:%s, url:%s", task.ID, url)
@@ -136,9 +137,7 @@ func initEventHandlers(app *App) {
 					app.lg.Info("startTask: type:error, id:%s, do: re start task", task.ID)
 					task.Status = mo.StatusPending
 					task.Path = app.conf.SaveDir // clean task
-					task.Meta = map[string]string{}
 					task.FinishAt = time.Time{}
-					task.SubTasks = []*mo.SubTask{}
 					task.Err = nil
 					err := pr.Prepare(task, app.httpclient)
 					if err != nil {
@@ -215,6 +214,9 @@ func initEventHandlers(app *App) {
 			task := app.ts.Find(id)
 			if task != nil {
 				app.ts.DeleteTask(task)
+				for _, file := range task.ExternalFiles {
+					os.Remove(file)
+				}
 				if task.Path == app.conf.SaveDir {
 					for _, subtask := range task.SubTasks {
 						os.Remove(filepath.Join(app.conf.SaveDir, subtask.FileName))

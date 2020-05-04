@@ -23,18 +23,19 @@ type (
 	Task struct {
 		mux sync.Mutex
 
-		ID         string            `json:"id"`
-		URL        string            `json:"url"`
-		Status     TaskStatus        `json:"status"`
-		Path       string            `json:"path"`
-		Title      string            `json:"title"`
-		FileSize   int64             `json:"file_size"`
-		Preview    string            `json:"preview"` // 预览图的路径
-		Meta       map[string]string `json:"meta"`
-		CreateAt   time.Time         `json:"create_at"`
-		FinishAt   time.Time         `json:"finish_at"`
-		ParserName string            `json:"parser_name"` // Parser内部名
-		Err        error             `json:"error"`
+		ID            string            `json:"id"`
+		URL           string            `json:"url"`
+		Status        TaskStatus        `json:"status"`
+		Path          string            `json:"path"`
+		Title         string            `json:"title"`
+		FileSize      int64             `json:"file_size"`
+		Preview       string            `json:"preview"` // 预览图的路径
+		Meta          map[string]string `json:"meta"`
+		CreateAt      time.Time         `json:"create_at"`
+		FinishAt      time.Time         `json:"finish_at"`
+		ParserName    string            `json:"parser_name"`    // Parser内部名
+		ExternalFiles []string          `json:"external_files"` // 除任务本体、Preview外创建的文件
+		Err           error             `json:"error"`
 
 		SubTasks []*SubTask `json:"subtasks"`
 	}

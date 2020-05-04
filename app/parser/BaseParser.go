@@ -29,7 +29,7 @@ func (parser BaseParser) GetMeta() Meta {
 	}
 }
 
-// Prepare task Path, Title, FileSize, Preview, Meta, Subtasks,
+// Prepare task Path, Title, FileSize, Preview, Meta, Subtasks, ExternalFiles,
 func (parser BaseParser) Prepare(task *mo.Task, client *request.HTTPClient) (err error) {
 	resp, err := client.Req("HEAD", task.URL, nil, "", nil)
 	if err != nil {
@@ -56,6 +56,7 @@ func (parser BaseParser) Prepare(task *mo.Task, client *request.HTTPClient) (err
 		task.Preview = filepath.Join(task.Path, filename)
 	}
 
+	task.SubTasks = []*mo.SubTask{}
 	subtask := &mo.SubTask{
 		FileName: task.Title,
 		URL:      task.URL,

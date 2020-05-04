@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	mo "github.com/enify/multi-downloader/app/model"
 	"github.com/enify/multi-downloader/app/request"
 	"github.com/enify/multi-downloader/app/util"
-	"github.com/PuerkitoBio/goquery"
 )
 
 // EhentaiParser support Ehentai Album download
@@ -90,6 +90,7 @@ func (parser EhentaiParser) Prepare(task *mo.Task, client *request.HTTPClient) (
 		"Rating":    mainDom.Find("#rating_label").Text(),
 	}
 
+	task.SubTasks = []*mo.SubTask{}
 	type imgPage struct {
 		Title string
 		URL   string
@@ -162,5 +163,19 @@ func (parser EhentaiParser) Prepare(task *mo.Task, client *request.HTTPClient) (
 		}(page)
 	}
 	wg.Wait()
+
+	task.ExternalFiles = []string{}
+	var infoFile = filepath.Join(task.Path, "info.txt")
+	var infoContent = ""
+	for k, v := range task.Meta {
+		infoContent += fmt.Sprintf("%s: %s\n", k, v)
+	}
+	err = ioutil.WriteFile(infoFile, []byte(infoContent), 0664)
+	if err != nil {
+		return fmt.Errorf("write task info file: E:%w", err)
+	}
+
+	task.ExternalFiles = append(task.ExternalFiles, infoFile)
+
 	return
 }
