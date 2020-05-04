@@ -20,6 +20,7 @@ type AppConfig struct {
 	UserAgent         string `json:"user_agent"`
 	NotifyAtTaskDone  bool   `json:"notify_at_task_done"`
 	NotifyAtTaskError bool   `json:"notify_at_task_error"`
+	ExitMode          string `json:"exit_mode"` // "notset":未设置，"exit":退出，"tray":最小化到托盘
 }
 
 // NewAppConfig 返回 AppConfig 指针对象
@@ -48,6 +49,7 @@ func (c *AppConfig) initDefaultAppConfig() {
 	c.UseProxy = "off"
 	c.NotifyAtTaskDone = true
 	c.NotifyAtTaskError = true
+	c.ExitMode = "notset"
 }
 
 // FileExist 检查配置文件是否存在

@@ -30,7 +30,7 @@ class SettingPanel : Reactor.Component {
             <section>
                 <span>
                     最大连接数：
-                    <input|hslider.routines :value={ this.confset.max_routines } min="1" max="100" step="1" />
+                    <input|hslider#max-routines :value={ this.confset.max_routines } min="1" max="100" step="1" />
                     <span>{ this.confset.max_routines }</span>
                 </span>
             </section>
@@ -39,7 +39,7 @@ class SettingPanel : Reactor.Component {
                 <br/>
                 <span>
                     User-Agent：
-                    <input|text.ua :value={ this.confset.user_agent } />
+                    <input|text#user-agent :value={ this.confset.user_agent } />
                 </span>
             </section>
             <label>消息提醒：</label>
@@ -51,11 +51,20 @@ class SettingPanel : Reactor.Component {
             <label>代理设置：</label>
             <section>
                 <br/>
-                <button|radio value="off" :checked={ this.confset.use_proxy == "off" }>不使用</button>
-                <button|radio value="system" :checked={ this.confset.use_proxy == "system" }>使用环境代理</button>
+                <button|radio.proxy value="off" :checked={ this.confset.use_proxy == "off" }>不使用</button>
+                <button|radio.proxy value="system" :checked={ this.confset.use_proxy == "system" }>使用环境代理</button>
                 <span>
-                    <button|radio value="user" :checked={ this.confset.use_proxy == "user" }>自定义代理服务器</button>
-                    <input|text.proxy :value={ this.confset.proxy } :disabled={ this.confset.use_proxy != "user" } />
+                    <button|radio.proxy value="user" :checked={ this.confset.use_proxy == "user" }>自定义代理服务器</button>
+                    <input|text#proxy :value={ this.confset.proxy } :disabled={ this.confset.use_proxy != "user" } />
+                </span>
+            </section>
+            <label>其它设置：</label>
+            <section>
+                <br/>
+                <span>
+                    点击关闭按钮时：
+                    <button|radio.exit-mode value="tray" :checked={ this.confset.exit_mode == "tray" }>最小化到托盘</button>
+                    <button|radio.exit-mode value="exit" :checked={ this.confset.exit_mode == "exit" }>退出</button>
                 </span>
             </section>
             <label></label>
@@ -75,12 +84,12 @@ class SettingPanel : Reactor.Component {
         this.postEvent("save-config", this.confset);
     }
 
-    event change $(input.routines) (ect,e) {
+    event change $(input#max-routines) (ect,e) {
         this.confset.max_routines = e.value;
         this.update();
     }
 
-    event change $(input.ua) (evt,e) {
+    event change $(input#user-agent) (evt,e) {
         this.confset.user_agent = e.value;
     }
 
@@ -88,16 +97,20 @@ class SettingPanel : Reactor.Component {
         this.confset.notify_at_task_done = e.value;
     }
 
-    event change $(button##notify-at-error) (evt,e) {
+    event change $(button#notify-at-error) (evt,e) {
         this.confset.notify_at_task_error = e.value;
     }
 
-    event change $(button[type=radio]) (evt,e) {
+    event change $(button[type=radio].proxy) (evt,e) {
         this.confset.use_proxy = e.value;
         this.update();
     }
 
-    event change $(input.proxy) (evt,e) {
+    event change $(input#proxy) (evt,e) {
         this.confset.proxy = e.value;
+    }
+
+    event change $(button[type=radio].exit-mode) (evt,e) {
+        this.confset.exit_mode = e.value;
     }
 }

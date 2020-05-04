@@ -65,16 +65,32 @@ event closerequest (evt) {
         view.close()
     } else {
         evt.cancel = true;
-        var r = view.msgbox({
-            type: #question,
-            title: "退出",
-            content: "确定要退出此应用吗？",
-            buttons: [
-                {id:#cancel, text:"取消", role:"cancel-button"},
-                {id:#yes, text:"确定", role:"default-button"},
-            ],
-        });
-        if (r === #yes) {
+        var mode = runtime.appconfig.exit_mode;
+        if (mode === "notset") {
+            var rem = false;
+            var r = view.msgbox({
+                type: #question,
+                title: "提示",
+                content: "<p>你点击了关闭按钮，是想要？</p><small><button|checkbox#rem>记住我的选择</button></small>",
+                buttons: [
+                    {id:#tray, text:"最小化"},
+                    {id:#exit, text:"关闭", role:"default-button"},
+                ],
+                onClose: function(root,e) { rem = root.$(#rem).value; },
+            });
+            if (rem) {
+                var conf = runtime.appconfig;
+                conf.exit_mode = r;
+                runtime.postEvent("config-changed", conf);
+            }
+            if (r == #tray) {
+                view.windowState = View.WINDOW_HIDDEN;
+            } else if (r == #exit) {
+                runtime.postEvent("close-request");
+            }
+        } else if (mode === "tray") {
+            view.windowState = View.WINDOW_HIDDEN;
+        } else if (mode === "exit") {
             runtime.postEvent("close-request");
         }
     }
@@ -106,4 +122,4 @@ event click $(menu#tray > li#show-window) {
     }
 }
 
-event click $(menu#tray > li#exit-app) { EXIT_FLAG = true; view.close(); }
+event click $(menu#tray > li#exit-app) { runtime.postEvent("close-request"); }
