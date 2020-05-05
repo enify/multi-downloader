@@ -92,12 +92,12 @@ class DownloadView : Element {
     function setToolbarState(vtable) {
         var count = {"pending":0, "running":0, "pause":0, "done":0, "error":0};
 
-        var ids = getOptTasks(vtable)
-        var records = vtable.recordset.filter(:r:r.id in ids)
+        var ids = getOptTasks(vtable);
+        var records = vtable.recordset.filter(:r:r.id in ids);
 
         for (var r in records) {
             if (r.status in count) {
-                count[r.status] ++
+                count[r.status] ++;
             }
         }
         $(button#start-task).state.disabled = count.pause + count.error == 0;
@@ -124,21 +124,21 @@ class DownloadView : Element {
         }
     }
 
-    event click $(button#start-task) {
+    event click $(button#start-task, menu>li[command=start-task]) {
         var ids = getOptTasks(this.tasktable);
         runtime.postEvent("task-started", ids);
         this.tasktable.selectedRecords = {};
         this.tasktable.currentRecord = null;
     }
 
-    event click $(button#pause-task) {
+    event click $(button#pause-task, menu>li[command=pause-task]) {
         var ids = getOptTasks(this.tasktable);
         runtime.postEvent("task-paused", ids);
         this.tasktable.selectedRecords = {};
         this.tasktable.currentRecord = null;
     }
 
-    event click $(button#delete-task) {
+    event click $(button#delete-task, menu>li[command=delete-task]) {
         var ids = getOptTasks(this.tasktable);
         var r = view.msgbox({
             type: #question,
@@ -156,7 +156,7 @@ class DownloadView : Element {
         }
     }
 
-    event click $(button#remove-task) {
+    event click $(button#remove-task, menu>li[command=remove-task]) {
         var ids = getOptTasks(this.tasktable);
         var r = view.msgbox({
             type: #question,
@@ -198,6 +198,24 @@ class DownloadView : Element {
             alignment: -8,
             parameters: this.tasktable.recordset[idx],
         });
+    }
+
+    event contextmenusetup $(table tr) (evt,e) {
+        var menu = evt.source;
+        var isMulti = getOptTasks(this.tasktable).length > 1;
+        
+        menu.$(li[command=task-folder]).attributes["hidden"] = isMulti ? true : undefined;
+        menu.$(li[command=start-task]).attributes["hidden"] = $(button#start-task).state.disabled ? true : undefined;
+        menu.$(li[command=pause-task]).attributes["hidden"] = $(button#pause-task).state.disabled ? true : undefined;
+    }
+
+    event click $(menu>li[command=task-folder]) {
+        Sciter.launch(this.tasktable.currentRecord.path);
+    }
+
+    event click $(menu>li[command=copy-link]) {
+        view.clipboard(#put, this.tasktable.currentRecord.url);
+        this.postEvent("toast", {type:"info", msg:"已复制到剪切板！"});
     }
 
 }

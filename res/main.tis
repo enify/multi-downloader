@@ -5,11 +5,13 @@ include "runtime/runtime.tis";
 include "utils/utils.tis";
 
 var EXIT_FLAG = false;  // 窗口退出标志
+var IS_DEBUG = false;
 
 
 self.ready = function() {
     var meta = runtime.appmeta;
 
+    IS_DEBUG = meta.is_debug;
     $(aside .title).text = meta.appname;
     view.windowIcon = self.url("assets/img/icon.png");
     view.trayIcon({
@@ -61,8 +63,8 @@ class MainController : Element
 }
 
 event closerequest (evt) {
-    if (EXIT_FLAG === true) {
-        view.close()
+    if (EXIT_FLAG === true || IS_DEBUG) {
+        return true;
     } else {
         evt.cancel = true;
         var mode = runtime.appconfig.exit_mode;
@@ -122,4 +124,4 @@ event click $(menu#tray > li#show-window) {
     }
 }
 
-event click $(menu#tray > li#exit-app) { runtime.postEvent("close-request"); }
+event click $(menu#tray > li#exit-app) { EXIT_FLAG = true; view.close(); }

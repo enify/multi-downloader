@@ -82,7 +82,7 @@ class CompleteView : Element {
         }
     }
 
-    event click $(button#delete-task) {
+    event click $(button#delete-task, menu>li[command=delete-task]) {
         var ids = getOptTasks(this.tasktable);
         var r = view.msgbox({
             type: #question,
@@ -100,7 +100,7 @@ class CompleteView : Element {
         }
     }
 
-    event click $(button#remove-task) {
+    event click $(button#remove-task, menu>li[command=remove-task]) {
         var ids = getOptTasks(this.tasktable);
         var r = view.msgbox({
             type: #question,
@@ -146,6 +146,29 @@ class CompleteView : Element {
             alignment: -8,
             parameters: this.tasktable.recordset[idx],
         });
+    }
+
+    event contextmenusetup $(table tr) (evt,e) {
+        var menu = evt.source;
+        var isMulti = getOptTasks(this.tasktable).length > 1;
+        
+        menu.$(li[command=task-file]).attributes["hidden"] = isMulti || this.tasktable.currentRecord.subtasks.length !== 1 ? true : undefined;
+        menu.$(li[command=task-folder]).attributes["hidden"] = isMulti ? true : undefined;
+    }
+
+    event click $(menu>li[command=task-file]) {
+        var task = this.tasktable.currentRecord;
+        var path = task.subtasks.length === 1 ? task.path + "/" + task.subtasks[0].filename : "";
+        Sciter.launch(path);
+    }
+
+    event click $(menu>li[command=task-folder]) {
+        Sciter.launch(this.tasktable.currentRecord.path);
+    }
+
+    event click $(menu>li[command=copy-link]) {
+        view.clipboard(#put, this.tasktable.currentRecord.url);
+        this.postEvent("toast", {type:"info", msg:"已复制到剪切板！"});
     }
     
 }

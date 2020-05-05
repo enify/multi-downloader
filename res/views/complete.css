@@ -17,4 +17,8 @@
     table th:nth-child(1) { width: 5*; }
     table th:nth-child(2) { width: 3*; }
     table th:nth-child(3) { width: 1.5*; }
+
+    table tr {
+        context-menu: selector(menu#for-tasktable);
+    }
 }
