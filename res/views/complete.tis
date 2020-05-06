@@ -79,6 +79,7 @@ class CompleteView : Element {
         });
         if (url) {
             runtime.postEvent("task-added", url);
+            $(main aside li[href]:first-child).sendEvent("click");
         }
     }
 
