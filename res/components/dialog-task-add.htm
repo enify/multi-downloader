@@ -55,13 +55,15 @@
     </style>
     
     <script type="text/tiscript">
+        var filters = view.parameters.filters;
+        var defaultUrl = view.parameters.url;
+
         event change $(input) (evt,e) { $(button#ok).state.disabled = !(e.value.length > 0); }
         event focus $(input) { $(#errmsg).text = ""; }
 
         event click $(button#cancel) { view.close(); }
         event click $(button#ok) {
             var url = $(input).value;
-            var filters = view.parameters;
             var support = false;
             for (var rgx in filters) {
                 var r =new RegExp(rgx);
@@ -76,6 +78,9 @@
                 $(#errmsg).text = "不支持的链接格式";
             }
         }
+
+        $(input).value = defaultUrl ? defaultUrl : "";
+        $(input).sendEvent("change");
         
     </script>
 </head>

@@ -21,6 +21,7 @@ type AppConfig struct {
 	NotifyAtTaskDone  bool   `json:"notify_at_task_done"`
 	NotifyAtTaskError bool   `json:"notify_at_task_error"`
 	ExitMode          string `json:"exit_mode"` // "notset":未设置，"exit":退出，"tray":最小化到托盘
+	WatchClipboard    bool   `json:"watch_clipboard"`
 }
 
 // NewAppConfig 返回 AppConfig 指针对象
@@ -50,6 +51,7 @@ func (c *AppConfig) initDefaultAppConfig() {
 	c.NotifyAtTaskDone = true
 	c.NotifyAtTaskError = true
 	c.ExitMode = "notset"
+	c.WatchClipboard = false
 }
 
 // FileExist 检查配置文件是否存在

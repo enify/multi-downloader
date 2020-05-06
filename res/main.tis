@@ -10,6 +10,8 @@ var IS_DEBUG = false;
 
 self.ready = function() {
     var meta = runtime.appmeta;
+    var conf = runtime.appconfig;
+    var parsers = runtime.appparsers;
 
     IS_DEBUG = meta.is_debug;
     $(aside .title).text = meta.appname;
@@ -18,6 +20,47 @@ self.ready = function() {
         image: self.loadImage(self.url("assets/img/icon.png")),
         text: meta.appname,
     });
+
+    var clipboardData = null;
+    var urlfilters = parsers.map((p) => {
+        if (p.priority < 10) {
+            return p.urlrgx;
+        }
+    });
+    if (conf.watch_clipboard) {
+        self.timer(1s, function(){
+            var text = view.clipboard(#get, #text);
+            if (clipboardData === null) { clipboardData = text };  // at restart
+            if (clipboardData !== text) {
+                var support = false;
+                for (var rgx in urlfilters) {
+                    var r =new RegExp(rgx);
+                    if (r.test(text)){
+                        support = true;
+                        break;
+                    }
+                }
+                if (support) {
+                    var taskUrls = runtime.apptasks.map(:t:t.url);
+                    if (!(text in taskUrls)) {
+                        var url = view.dialog({
+                            url: self.url("components/dialog-task-add.htm"),
+                            width: 400,
+                            alignment: 5,
+                            parameters: {filters: runtime.urlfilters, url: text},
+                        });
+                        if (url) {
+                            runtime.postEvent("task-added", url);
+                            $(main aside li[href]:first-child).sendEvent("click");
+                        }
+                    }
+                }
+                clipboardData = text;
+            }
+            return true;
+        });
+    }
+
     utils.centerWindow();
 }
 

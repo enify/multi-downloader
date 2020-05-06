@@ -70,12 +70,11 @@ class CompleteView : Element {
     event click $(button#select-all) { setToolbarState(this.tasktable); }
 
     event click $(button#add-task) {
-        var filters = runtime.urlfilters;
         var url = view.dialog({
             url: self.url("components/dialog-task-add.htm"),
             width: 400,
             alignment: 5,
-            parameters: filters,
+            parameters: {filters: runtime.urlfilters},
         });
         if (url) {
             runtime.postEvent("task-added", url);

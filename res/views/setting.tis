@@ -66,6 +66,7 @@ class SettingPanel : Reactor.Component {
                     <button|radio.exit-mode value="tray" :checked={ this.confset.exit_mode == "tray" }>最小化到托盘</button>
                     <button|radio.exit-mode value="exit" :checked={ this.confset.exit_mode == "exit" }>退出</button>
                 </span>
+                <button|checkbox#watch_clipboard :checked={ this.confset.watch_clipboard }>剪切板监听</button>
             </section>
             <label></label>
             <section><button#save-config>保存</button></section>
@@ -112,5 +113,9 @@ class SettingPanel : Reactor.Component {
 
     event change $(button[type=radio].exit-mode) (evt,e) {
         this.confset.exit_mode = e.value;
+    }
+
+    event clange $(button#watch_clipboard) (evt,e) {
+        this.confset.watch_clipboard = e.value;
     }
 }
