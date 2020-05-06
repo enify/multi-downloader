@@ -131,6 +131,7 @@
         event click $(a.link) (evt,e) {
             view.clipboard(#put, e.attributes["href"]);
             view.msgbox(#information, "已复制到剪切板！", "提示");
+            return true;
         }
 
         event click $(img.preview) (evt,e) { Sciter.launch(e.attributes["title"]); }
