@@ -56,7 +56,7 @@
     
     <script type="text/tiscript">
         var filters = view.parameters.filters;
-        var defaultUrl = view.parameters.url;
+        var defaultUrl = view.parameters.url ? view.parameters.url : "";
 
         event change $(input) (evt,e) { $(button#ok).state.disabled = !(e.value.length > 0); }
         event focus $(input) { $(#errmsg).text = ""; }
@@ -79,8 +79,7 @@
             }
         }
 
-        $(input).value = defaultUrl ? defaultUrl : "";
-        $(input).sendEvent("change");
+        self.timer(20ms, ::$(input).appendText(defaultUrl));
         
     </script>
 </head>
