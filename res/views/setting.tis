@@ -115,7 +115,7 @@ class SettingPanel : Reactor.Component {
         this.confset.exit_mode = e.value;
     }
 
-    event clange $(button#watch_clipboard) (evt,e) {
+    event change $(button#watch_clipboard) (evt,e) {
         this.confset.watch_clipboard = e.value;
     }
 }
