@@ -178,7 +178,7 @@ func initEventHandlers(app *App) {
 			if task != nil {
 				if task.Status == mo.StatusRunning {
 					task.Status = mo.StatusPause
-					app.lg.Info("pauseTask: id%s", task.ID)
+					app.lg.Info("pauseTask: id:%s", task.ID)
 				}
 			}
 			app.ts.Save()

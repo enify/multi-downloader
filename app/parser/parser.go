@@ -40,6 +40,7 @@ func init() {
 	register := []Parser{ // 要注册的解析器
 		BaseParser{},
 		EhentaiParser{},
+		NhentaiParser{},
 	}
 
 	sort.SliceStable(register, func(i, j int) bool {
